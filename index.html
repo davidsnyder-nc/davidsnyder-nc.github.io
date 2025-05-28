@@ -13,6 +13,40 @@
             margin: 0;
             padding: 0;
         }
+        .topnav {
+            width: 100%;
+            background: #fff;
+            box-shadow: 0 2px 12px rgba(60,60,100,0.06);
+            padding: 0.7rem 0;
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .nav-btn {
+            padding: 0.7rem 1.7rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.08rem;
+            font-weight: 600;
+            background: #e0e7ff;
+            color: #4338ca;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s;
+            box-shadow: 0 1px 4px rgba(60,60,100,0.04);
+        }
+        .nav-btn.primary, .nav-btn.active {
+            background: #4a55a2;
+            color: #fff;
+        }
+        .nav-btn.disabled {
+            background: #e5e7eb;
+            color: #a0aec0;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
         .container {
             max-width: 900px;
             margin: 40px auto 40px auto;
@@ -104,10 +138,15 @@
             h1 { font-size: 2rem; }
             h2 { font-size: 1.15rem; }
             .screenshot-switcher { flex-direction: column; gap: 0.5rem; }
+            .topnav { flex-direction: column; gap: 0.5rem; padding: 0.5rem 0; }
         }
     </style>
 </head>
 <body>
+    <nav class="topnav">
+        <button class="nav-btn primary active">AI News</button>
+        <button class="nav-btn disabled">More Apps Coming Soon</button>
+    </nav>
     <div class="container">
         <h1>AI News Feed App</h1>
         <p><strong>AI News Feed</strong> is a modern web application that generates in-depth, AI-powered news stories across 20+ categories. It leverages multiple AI models (Gemini, Claude, ChatGPT) and can fetch real news from APIs like GNews, NewsAPI.org, The Guardian, and NY Times. The app is designed for flexibility, customizability, and ease of use.</p>
