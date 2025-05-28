@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI News Feed - JS Syntax & UI Fixes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            background-color: #f4f7f9; 
+            color: #1a202c; 
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+            width: 100%;
+            max-width: 1200px; 
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative; 
+        }
+        .btn {
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;
+            transition: background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.1s ease-in-out, outline 0.2s ease-in-out, border-color 0.2s ease-in-out;
+            border: 2px solid transparent; 
+            margin: 0.25rem; 
+            display: inline-flex; align-items: center; justify-content: center;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 2px 4px 0 rgba(0,0,0,0.07); }
+        .btn:active { transform: translateY(0px); }
+        
+        /* Category Button Colors */
+        .btn-cat-tech { background-color: #E0E7FF; color: #4338CA; border-color: #C7D2FE;}
+        .btn-cat-tech:hover { background-color: #C7D2FE; }
+        .btn-cat-general { background-color: #DBEAFE; color: #1D4ED8; border-color: #BFDBFE;}
+        .btn-cat-general:hover { background-color: #BFDBFE; }
+        .btn-cat-movies_tv { background-color: #FCE7F3; color: #DB2777; border-color: #FBCFE8;}
+        .btn-cat-movies_tv:hover { background-color: #FBCFE8; }
+        .btn-cat-automotive { background-color: #E5E7EB; color: #374151; border-color: #D1D5DB;}
+        .btn-cat-automotive:hover { background-color: #D1D5DB; }
+        .btn-cat-lifestyle { background-color: #CCFBF1; color: #0D9488; border-color: #99F6E4;}
+        .btn-cat-lifestyle:hover { background-color: #99F6E4; }
+        .btn-cat-science { background-color: #D1FAE5; color: #059669; border-color: #A7F3D0;}
+        .btn-cat-science:hover { background-color: #A7F3D0; }
+        .btn-cat-business { background-color: #FEF3C7; color: #D97706; border-color: #FDE68A;} 
+        .btn-cat-business:hover { background-color: #FDE68A;}
+        .btn-cat-finance { background-color: #E0F2FE; color: #0284C7; border-color: #BAE6FD;} 
+        .btn-cat-finance:hover { background-color: #BAE6FD;}
+        .btn-cat-politics { background-color: #FEE2E2; color: #DC2626; border-color: #FECACA;} 
+        .btn-cat-politics:hover { background-color: #FECACA;}
+        .btn-cat-health { background-color: #DCFCE7; color: #16A34A; border-color: #BBF7D0;} 
+        .btn-cat-health:hover { background-color: #BBF7D0;}
+        .btn-cat-world { background-color: #F3E8FF; color: #7E22CE; border-color: #E9D5FF;} 
+        .btn-cat-world:hover { background-color: #E9D5FF;}
+        .btn-cat-sports { background-color: #FFF7ED; color: #EA580C; border-color: #FFEDD5;} 
+        .btn-cat-sports:hover { background-color: #FFEDD5;}
+        .btn-cat-entertainment { background-color: #FAF5FF; color: #9333EA; border-color: #F3E8FF;} 
+        .btn-cat-entertainment:hover { background-color: #F3E8FF;}
+        .btn-cat-gaming { background-color: #EFF6FF; color: #2563EB; border-color: #DBEAFE;} 
+        .btn-cat-gaming:hover { background-color: #DBEAFE;}
+        .btn-cat-culture { background-color: #FEFCE8; color: #CA8A04; border-color: #FEF9C3;} 
+        .btn-cat-culture:hover { background-color: #FEF9C3;}
+        .btn-cat-opinion { background-color: #F0F9FF; color: #0EA5E9; border-color: #E0F2FE;} 
+        .btn-cat-opinion:hover { background-color: #E0F2FE;}
+        .btn-cat-local { background-color: #FDF2F8; color: #BE185D; border-color: #FCE7F3;} 
+        .btn-cat-local:hover { background-color: #FCE7F3;}
+        .btn-cat-travel { background-color: #ECFDF5; color: #059669; border-color: #D1FAE5;} 
+        .btn-cat-travel:hover { background-color: #D1FAE5;}
+        .btn-cat-food { background-color: #FFFBEB; color: #F59E0B; border-color: #FEF3C7;} 
+        .btn-cat-food:hover { background-color: #FEF3C7;}
+        .btn-cat-education { background-color: #EEF2FF; color: #4F46E5; border-color: #E0E7FF;} 
+        .btn-cat-education:hover { background-color: #E0E7FF;}
+
+
+        /* Category Button Active State */
+        .btn-cat-tech.active { background-color: #4A55A2; color: white; border-color: #3A4280;}
+        .btn-cat-general.active { background-color: #5A96E3; color: white; border-color: #4A7BC1;}
+        .btn-cat-movies_tv.active { background-color: #E35A8A; color: white; border-color: #C14A72;}
+        .btn-cat-automotive.active { background-color: #4A5568; color: white; border-color: #2D3748;}
+        .btn-cat-lifestyle.active { background-color: #319795; color: white; border-color: #2C7A7B;}
+        .btn-cat-science.active { background-color: #38A169; color: white; border-color: #2F855A;}
+        .btn-cat-business.active { background-color: #D97706; color: white; border-color: #B45309;}
+        .btn-cat-finance.active { background-color: #0284C7; color: white; border-color: #0369A1;}
+        .btn-cat-politics.active { background-color: #DC2626; color: white; border-color: #B91C1C;}
+        .btn-cat-health.active { background-color: #16A34A; color: white; border-color: #15803D;}
+        .btn-cat-world.active { background-color: #7E22CE; color: white; border-color: #6B21A8;}
+        .btn-cat-sports.active { background-color: #EA580C; color: white; border-color: #C2410C;}
+        .btn-cat-entertainment.active { background-color: #9333EA; color: white; border-color: #7E22CE;}
+        .btn-cat-gaming.active { background-color: #2563EB; color: white; border-color: #1D4ED8;}
+        .btn-cat-culture.active { background-color: #CA8A04; color: white; border-color: #A16207;}
+        .btn-cat-opinion.active { background-color: #0EA5E9; color: white; border-color: #0284C7;}
+        .btn-cat-local.active { background-color: #BE185D; color: white; border-color: #9D174D;}
+        .btn-cat-travel.active { background-color: #059669; color: white; border-color: #047857;}
+        .btn-cat-food.active { background-color: #F59E0B; color: white; border-color: #D97706;}
+        .btn-cat-education.active { background-color: #4F46E5; color: white; border-color: #4338CA;}
+
+
+        .btn-purple { background-color: #805AD5; color: white; } 
+        .btn-purple:hover { background-color: #6B46C1; }
+        .btn-orange { background-color: #F59E0B; color: white; } 
+        .btn-orange:hover { background-color: #D97706; }
+
+
+        .btn-success { background-color: #38A169; color: white; } 
+        .btn-success:hover { background-color: #2F855A; }
+        .btn-warning { background-color: #DD6B20; color: white; } 
+        .btn-warning:hover { background-color: #C05621; }
+        .btn-gray { background-color: #718096; color: white; } 
+        .btn-gray:hover { background-color: #4A5568; }
+
+        .btn-disabled { background-color: #A0AEC0; color: #E2E8F0; cursor: not-allowed; opacity: 0.8; box-shadow: none; border-color: transparent;}
+        .btn-disabled:hover { transform: none; box-shadow: none; }
+
+        .btn-processing { 
+            outline: 3px solid #805AD5; 
+            outline-offset: 2px;
+            animation: pulse-outline 1.2s infinite ease-in-out;
+        }
+        @keyframes pulse-outline {
+            0% { outline-color: rgba(128, 90, 213, 0.7); transform: scale(1); } 
+            50% { outline-color: rgba(167, 139, 250, 1); transform: scale(1.02); } 
+            100% { outline-color: rgba(128, 90, 213, 0.7); transform: scale(1); }
+        }
+
+        #statusMessage, #errorMessage { margin-top: 1rem; font-size: 0.9rem; min-height: 1.5rem; }
+        #errorMessage { color: #E53E3E; font-weight: 500; }
+
+        /* Main Tab Styling */
+        .tab-nav { display: flex; flex-wrap: wrap; border-bottom: 2px solid #E2E8F0; margin-bottom: 1.5rem; }
+        .tab-button { padding: 0.75rem 1.0rem; cursor: pointer; border: none; background-color: transparent; font-weight: 500; color: #718096; position: relative; transition: color 0.2s ease-in-out; white-space: nowrap; font-size: 0.875rem; }
+        .tab-button:hover { color: #2D3748; }
+        .tab-button.active { color: #4A55A2; font-weight: 600; }
+        .tab-button.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background-color: #4A55A2; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Settings Panel Tab Styling */
+        .settings-tab-nav { 
+            display: flex; 
+            flex-wrap: wrap; 
+            border-bottom: 1px solid #D1D5DB; 
+            margin-bottom: 1rem; 
+            background-color: #f9fafb; 
+            border-top-left-radius: 0.75rem; 
+            border-top-right-radius: 0.75rem;
+            padding: 0.5rem 1rem; 
+        }
+        .settings-tab-button { 
+            padding: 0.65rem 1rem; 
+            cursor: pointer; 
+            border: none; 
+            background-color: transparent; 
+            font-weight: 500; 
+            font-size: 0.875rem; 
+            color: #6B7280; 
+            border-bottom: 3px solid transparent; 
+            margin-bottom: -1px; 
+            transition: color 0.2s, border-color 0.2s; 
+        }
+        .settings-tab-button:hover { color: #374151; }
+        .settings-tab-button.active { color: #4A55A2; font-weight: 600; border-bottom-color: #4A55A2; }
+        .settings-tab-content { display: none; padding-top: 1rem; }
+        .settings-tab-content.active { display: block; }
+
+
+        .news-section { padding: 0.5rem; text-align: left; }
+        .news-section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .news-section-header h2 { font-size: 1.75rem; font-weight: 700; color: #2D3748; }
+        .news-content-area { max-height: 500px; overflow-y: auto; white-space: pre-wrap; padding: 1rem; border: 1px solid #CBD5E0; border-radius: 0.5rem; background-color: #F7FAFC; font-family: monospace; font-size: 0.8rem; } 
+        .loader { border: 5px solid #E2E8F0; border-top: 5px solid #4A55A2; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 1rem auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .main-button-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .category-button-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; border: 1px solid #E2E8F0; padding: 0.75rem; border-radius: 0.5rem;}
+        hr.story-separator { border-top: 2px dashed #A0AEC0; margin: 1.5rem 0; }
+        
+        .control-group { margin-bottom: 1rem; }
+        .control-group label { display: block; text-align: left; font-weight: 500; color: #4A5568; margin-bottom: 0.25rem; }
+        .control-group input[type="text"], .control-group input[type="password"], .control-group select, .control-group textarea {
+            width: 100%; padding: 0.65rem; border: 1px solid #CBD5E0; border-radius: 0.375rem; font-size: 0.9rem;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.075);
+        }
+        .control-group textarea { min-height: 150px; font-family: monospace; white-space: pre; font-size: 0.85rem; } 
+        .control-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23718096' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.5rem center; background-size: 1.5em 1.5em; padding-right: 2.5rem; }
+
+        #settingsPanel {
+            display: none; /* Ensure it's hidden by default */
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); width: 90%; max-width: 800px; 
+            background-color: white; 
+            border-radius: 0.75rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); z-index: 100; border: 1px solid #E2E8F0;
+            max-height: 90vh; 
+            flex-direction: column; 
+        }
+        #settingsPanelInner { 
+            padding: 0 2rem 2rem 2rem; 
+            overflow-y: auto; 
+            flex-grow: 1; 
+        }
+        #settingsPanel h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0; color: #2D3748; text-align:center; padding: 1.5rem 1rem 0.5rem 1rem; }
+        #settingsPanel .settings-subtitle { font-size: 1.1rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 1rem; color: #4A5568; text-align: left; border-bottom: 1px solid #E2E8F0; padding-bottom: 0.5rem;}
+
+        #settingsPanel .control-group { margin-bottom: 1.25rem; }
+        #settingsPanel .api-key-input { font-family: monospace; }
+        .settings-button-container { 
+            padding: 1rem 2rem; 
+            border-top: 1px solid #E2E8F0;
+            background-color: #f9fafb;
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .settings-button-container .btn { margin-left: 0.5rem;}
+
+
+        #settingsOverlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(45, 55, 72, 0.75); z-index: 99;
+        }
+        .header-controls { display: flex; justify-content: space-between; align-items: center; width: 100%;}
+        .toggle-switch-label { display: flex; align-items: center; font-size: 0.9rem; color: #4A5568; }
+        .toggle-switch { position: relative; display: inline-block; width: 40px; height: 20px; margin-left: 0.75rem;}
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #CBD5E0; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #38A169; } 
+        input:focus + .slider { box-shadow: 0 0 1px #38A169; }
+        input:checked + .slider:before { transform: translateX(20px); }
+        details > summary { cursor: pointer; font-weight: 500; margin-bottom: 0.5rem; color: #4A55A2; }
+        .api-key-link { font-size: 0.75rem; margin-left: 0.5rem; color: #4A55A2; text-decoration: underline; }
+        .api-key-link:hover { color: #3A4280; }
+        #audioPlayerContainer { margin-top: 1.5rem; display: flex; justify-content: center; }
+        #audioPlayer { width: 100%; max-width: 600px; }
+        #timeFrameSelectorContainer { max-width: 320px; margin-left: auto; margin-right: auto;} 
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-controls mb-6">
+            <h1 class="text-4xl font-bold text-gray-800">
+                AI News Feed 
+            </h1>
+            <button id="settingsBtn" class="btn btn-warning">
+                Settings
+            </button>
+        </div>
+        <p class="text-md text-gray-600 mt-2 mb-6">Get in-depth stories on your favorite topics.</p>
+
+        <div id="timeFrameSelectorContainer" class="control-group mb-4">
+            <label for="timeFrameSelector">Select News Time Frame:</label>
+            <select id="timeFrameSelector">
+                <option value="24h" selected>Last 24 hours</option>
+                <option value="7d">Last 7 days</option>
+                <option value="30d">Last 30 days</option>
+                <option value="1y">Past Year</option>
+            </select>
+        </div>
+
+        <div class="control-group mb-4">
+            <label for="customStoryInput" class="text-left block mb-1">Paste Your Custom Story (will be the first story after header/weather):</label>
+            <textarea id="customStoryInput" class="w-full p-2 border border-gray-300 rounded-md" rows="4" placeholder="Paste your custom news story text here..."></textarea>
+        </div>
+
+        <div class="control-group mb-4 flex items-center justify-center">
+            <label for="selectAllCategoriesToggle" class="toggle-switch-label cursor-pointer">
+                <span class="mr-2">Select/Deselect All Categories:</span>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="selectAllCategoriesToggle" class="opacity-0 w-0 h-0">
+                    <span class="slider"></span>
+                </div>
+            </label>
+        </div>
+
+        <div class="category-button-group mb-6">
+            <button data-category="tech" class="btn btn-cat-tech text-base">Tech</button>
+            <button data-category="general" class="btn btn-cat-general text-base">General</button>
+            <button data-category="movies_tv" class="btn btn-cat-movies_tv text-base">Movies & TV</button>
+            <button data-category="automotive" class="btn btn-cat-automotive text-base">Automotive</button>
+            <button data-category="lifestyle" class="btn btn-cat-lifestyle text-base">Lifestyle</button>
+            <button data-category="science" class="btn btn-cat-science text-base">Science</button>
+            <button data-category="business" class="btn btn-cat-business text-base">Business</button>
+            <button data-category="finance" class="btn btn-cat-finance text-base">Finance</button>
+            <button data-category="politics" class="btn btn-cat-politics text-base">Politics</button>
+            <button data-category="health" class="btn btn-cat-health text-base">Health</button>
+            <button data-category="world" class="btn btn-cat-world text-base">World</button>
+            <button data-category="sports" class="btn btn-cat-sports text-base">Sports</button>
+            <button data-category="entertainment" class="btn btn-cat-entertainment text-base">Entertainment</button>
+            <button data-category="gaming" class="btn btn-cat-gaming text-base">Gaming</button>
+            <button data-category="culture" class="btn btn-cat-culture text-base">Culture</button>
+            <button data-category="opinion" class="btn btn-cat-opinion text-base">Opinion</button>
+            <button data-category="local" class="btn btn-cat-local text-base">Local</button>
+            <button data-category="travel" class="btn btn-cat-travel text-base">Travel</button>
+            <button data-category="food" class="btn btn-cat-food text-base">Food</button>
+            <button data-category="education" class="btn btn-cat-education text-base">Education</button>
+        </div>
+        
+        <button id="generateSelectedBtn" class="btn btn-purple text-lg">
+            Generate Stories for Selected Categories
+        </button>
+        
+        <div id="loader" class="loader hidden"></div>
+        <div id="statusMessage" class="text-gray-600 mt-3">Configure AI models in Settings, then click a button above to generate news.</div>
+        <div id="errorMessage" class="font-semibold mt-1"></div>
+
+        <div id="audioPlayerContainer" class="hidden">
+            <audio id="audioPlayer" controls></audio>
+        </div>
+
+        <div id="settingsOverlay"></div>
+        <div id="settingsPanel">
+            <h3>Settings</h3>
+            <div class="settings-tab-nav">
+                <button class="settings-tab-button active" data-settings-tab="general">General</button>
+                <button class="settings-tab-button" data-settings-tab="newsSources">News Sources</button>
+                <button class="settings-tab-button" data-settings-tab="aiModels">AI Models</button>
+                <button class="settings-tab-button" data-settings-tab="audioWeather">Audio & Weather</button>
+                <button class="settings-tab-button" data-settings-tab="prompts">Prompts</button>
+            </div>
+            <div id="settingsPanelInner">
+                <div class="settings-tab-content active" data-settings-tab-content="general">
+                    <h4 class="settings-subtitle">General Configuration</h4>
+                    <div class="control-group">
+                        <label for="llmSelector">Choose AI Model for Processing:</label>
+                        <select id="llmSelector">
+                            <option value="gemini" selected>Gemini</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="blockedTermsInput">Blocked Terms (comma-separated):</label>
+                        <input type="text" id="blockedTermsInput" placeholder="e.g., politics, specific company name">
+                    </div>
+                    <div class="control-group">
+                        <label for="customHeaderText">Custom Header for Copied Text & Audio:</label>
+                        <input type="text" id="customHeaderText" placeholder="e.g., For Notebook LM:">
+                    </div>
+                </div>
+
+                <div class="settings-tab-content" data-settings-tab-content="newsSources">
+                    <h4 class="settings-subtitle">News Source APIs</h4>
+                    <div class="control-group">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="gnewsApiKey">GNews API Key: <a href="https://gnews.io/" target="_blank" class="api-key-link">(Get Key)</a></label>
+                            <label class="toggle-switch-label">Enable GNews
+                                <div class="toggle-switch"><input type="checkbox" id="enableGnewsToggle"><span class="slider"></span></div>
+                            </label>
+                        </div>
+                        <input type="password" id="gnewsApiKey" class="api-key-input" placeholder="Enter GNews.io API Key">
+                        <p class="text-xs text-gray-500 mt-1 text-left">Free tier available. If disabled, AI will generate from its knowledge.</p>
+                    </div>
+                    <div class="control-group">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="newsapiOrgKey">NewsAPI.org Key: <a href="https://newsapi.org/" target="_blank" class="api-key-link">(Get Key)</a></label>
+                            <label class="toggle-switch-label">Enable NewsAPI.org
+                                <div class="toggle-switch"><input type="checkbox" id="enableNewsApiOrgToggle"><span class="slider"></span></div>
+                            </label>
+                        </div>
+                        <input type="password" id="newsapiOrgKey" class="api-key-input" placeholder="Enter NewsAPI.org Key">
+                    </div>
+                    <div class="control-group">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="guardianApiKey">The Guardian API Key: <a href="https://open-platform.theguardian.com/access/" target="_blank" class="api-key-link">(Get Key)</a></label>
+                            <label class="toggle-switch-label">Enable Guardian
+                                <div class="toggle-switch"><input type="checkbox" id="enableGuardianToggle"><span class="slider"></span></div>
+                            </label>
+                        </div>
+                        <input type="password" id="guardianApiKey" class="api-key-input" placeholder="Enter The Guardian API Key">
+                    </div>
+                    <div class="control-group">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="nytApiKey">NY Times API Key: <a href="https://developer.nytimes.com/" target="_blank" class="api-key-link">(Get Key)</a></label>
+                            <label class="toggle-switch-label">Enable NYT
+                                <div class="toggle-switch"><input type="checkbox" id="enableNytToggle"><span class="slider"></span></div>
+                            </label>
+                        </div>
+                        <input type="password" id="nytApiKey" class="api-key-input" placeholder="Enter New York Times API Key">
+                    </div>
+                </div>
+
+                <div class="settings-tab-content" data-settings-tab-content="aiModels">
+                    <h4 class="settings-subtitle">AI Model APIs</h4>
+                    <p class="text-xs text-gray-500 mb-4 text-left">API keys are stored in your browser's local storage. For production, manage API keys server-side.</p>
+                    <div class="control-group">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="geminiApiKey">Google Cloud API Key (for Gemini & Google TTS):</label>
+                            <label class="toggle-switch-label">Enable Gemini
+                                <div class="toggle-switch"><input type="checkbox" id="enableGeminiToggle"><span class="slider"></span></div>
+                            </label>
+                        </div>
+                        <input type="password" id="geminiApiKey" class="api-key-input" placeholder="Enter Google Cloud API Key (Required)">
+                        <p class="text-xs text-gray-500 mt-1 text-left">Ensure Cloud Text-to-Speech API is enabled for audio.</p>
+                    </div>
+                    <div class="control-group">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="anthropicApiKey">Claude API Key:</label>
+                            <label class="toggle-switch-label">Enable Claude
+                                <div class="toggle-switch"><input type="checkbox" id="enableAnthropicToggle"><span class="slider"></span></div>
+                            </label>
+                        </div>
+                        <input type="password" id="anthropicApiKey" class="api-key-input" placeholder="Enter Anthropic API Key">
+                    </div>
+                    <div class="control-group">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="openaiApiKey">ChatGPT API Key:</label>
+                            <label class="toggle-switch-label">Enable ChatGPT
+                                <div class="toggle-switch"><input type="checkbox" id="enableOpenaiToggle"><span class="slider"></span></div>
+                            </label>
+                        </div>
+                        <input type="password" id="openaiApiKey" class="api-key-input" placeholder="Enter OpenAI API Key">
+                    </div>
+                </div>
+
+                <div class="settings-tab-content" data-settings-tab-content="audioWeather">
+                     <h4 class="settings-subtitle">Audio Output (Google Cloud TTS)</h4>
+                     <div class="control-group">
+                        <div class="flex justify-between items-center mb-1">
+                            <label>Enable Audio Playback:</label>
+                            <label class="toggle-switch-label">
+                                <div class="toggle-switch"><input type="checkbox" id="enableGoogleTTSPlaybackToggle"><span class="slider"></span></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <div class="flex items-center justify-between">
+                            <label for="googleTTSVoiceSelector" class="flex-grow">Google Cloud TTS Voice:</label>
+                            <button id="sampleVoiceBtn" class="btn btn-sm btn-primary text-xs ml-2 p-1 px-2">Sample Voice</button>
+                        </div>
+                        <select id="googleTTSVoiceSelector">
+                            <option value="en-US-Standard-C">US Standard C (Female)</option>
+                            <option value="en-US-Standard-B">US Standard B (Male)</option>
+                            <option value="en-US-Standard-D">US Standard D (Male)</option>
+                            <option value="en-US-Standard-E">US Standard E (Female)</option>
+                            <option value="en-US-Wavenet-A">US WaveNet A (Male)</option>
+                            <option value="en-US-Wavenet-B">US WaveNet B (Male)</option>
+                            <option value="en-US-Wavenet-C">US WaveNet C (Female)</option>
+                            <option value="en-US-Wavenet-D">US WaveNet D (Male)</option>
+                            <option value="en-US-Wavenet-E">US WaveNet E (Female)</option>
+                            <option value="en-US-Wavenet-F">US WaveNet F (Female)</option>
+                            <option value="en-US-Neural2-A">US Neural2 A (Male)</option>
+                            <option value="en-US-Neural2-C">US Neural2 C (Female)</option>
+                            <option value="en-US-Neural2-D">US Neural2 D (Male)</option>
+                            <option value="en-US-Neural2-E">US Neural2 E (Female)</option>
+                            <option value="en-US-Neural2-F">US Neural2 F (Female)</option>
+                            <option value="en-US-Neural2-G">US Neural2 G (Female)</option>
+                            <option value="en-US-Neural2-H">US Neural2 H (Female)</option>
+                            <option value="en-US-Neural2-I">US Neural2 I (Male)</option>
+                            <option value="en-US-Neural2-J">US Neural2 J (Male)</option>
+                            <option value="en-US-Studio-M">US Studio M (Male - Premium)</option>
+                            <option value="en-US-Studio-O">US Studio O (Female - Premium)</option>
+                            <option value="en-GB-Standard-A">UK Standard A (Female)</option>
+                             <option value="en-GB-Standard-B">UK Standard B (Male)</option>
+                            <option value="en-GB-Wavenet-A">UK WaveNet A (Female)</option>
+                            <option value="en-GB-Wavenet-B">UK WaveNet B (Male)</option>
+                             <option value="en-GB-Neural2-A">UK Neural2 A (Female)</option>
+                            <option value="en-GB-Neural2-B">UK Neural2 B (Male)</option>
+                             <option value="en-AU-Standard-A">AU Standard A (Female)</option>
+                            <option value="en-AU-Wavenet-C">AU WaveNet C (Female)</option>
+                             <option value="en-IN-Standard-D">IN Standard D (Female)</option>
+                             <option value="en-IN-Wavenet-D">IN WaveNet D (Female)</option>
+                        </select>
+                    </div>
+                    <hr class="my-6 border-gray-300">
+                    <h4 class="settings-subtitle">Local Weather Forecast (via Open-Meteo)</h4>
+                    <div class="control-group">
+                        <div class="flex justify-between items-center mb-1">
+                            <label>Enable Local Weather (for audio & copied text):</label>
+                            <label class="toggle-switch-label">
+                                <div class="toggle-switch"><input type="checkbox" id="enableWeatherToggle"><span class="slider"></span></div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="latitudeInput">Latitude: <a href="https://www.latlong.net/" target="_blank" class="api-key-link">(Find Yours)</a></label>
+                        <input type="text" id="latitudeInput" placeholder="e.g., 34.0522">
+                    </div>
+                    <div class="control-group">
+                        <label for="longitudeInput">Longitude:</label>
+                        <input type="text" id="longitudeInput" placeholder="e.g., -118.2437">
+                    </div>
+                </div>
+
+                <div class="settings-tab-content" data-settings-tab-content="prompts">
+                    <h4 class="settings-subtitle">AI Prompt Templates</h4>
+                    <p class="text-xs text-gray-500 mb-4 text-left">Edit the prompts used to instruct the AI. Include <code>{{CUSTOM_HEADER}}</code>, <code>{{WEATHER_FORECAST}}</code>, and <code>{{PASTED_STORY_SSML}}</code> where you want them in the SSML. Other placeholders: <code>{{CATEGORY_NAME}}</code>, <code>{{TIME_FRAME_TEXT}}</code>, <code>{{RAW_NEWS_DATA}}</code>, <code>{{BLOCKED_TERMS_INSTRUCTION}}</code>, <code>{{CATEGORY_SUBJECT}}</code>, <code>{{CATEGORY_SPECIFICS}}</code>.</p>
+                    <details class="mb-4">
+                        <summary>News Processing Prompt Template (Used if external news is fetched)</summary>
+                        <div class="control-group mt-2">
+                            <label for="promptNewsProcessing">Prompt when using fetched news data:</label>
+                            <textarea id="promptNewsProcessing"></textarea>
+                        </div>
+                    </details>
+                    <details class="mb-2">
+                        <summary>Fallback Prompt Templates (Used if no external news is fetched)</summary>
+                        <div class="control-group mt-2"><label for="promptFallbackTech">Tech Fallback:</label><textarea id="promptFallbackTech"></textarea></div>
+                        <div class="control-group mt-2"><label for="promptFallbackGeneral">General Fallback:</label><textarea id="promptFallbackGeneral"></textarea></div>
+                        <div class="control-group mt-2"><label for="promptFallbackMoviesTv">Movies & TV Fallback:</label><textarea id="promptFallbackMoviesTv"></textarea></div>
+                        <div class="control-group mt-2"><label for="promptFallbackAutomotive">Automotive Fallback:</label><textarea id="promptFallbackAutomotive"></textarea></div>
+                        <div class="control-group mt-2"><label for="promptFallbackLifestyle">Lifestyle Fallback:</label><textarea id="promptFallbackLifestyle"></textarea></div>
+                        <div class="control-group mt-2"><label for="promptFallbackScience">Science Fallback:</label><textarea id="promptFallbackScience"></textarea></div>
+                    </details>
+                </div>
+            </div>
+
+
+            <div class="settings-button-container">
+                <button id="saveSettingsBtn" class="btn btn-success">Save Settings</button>
+                <button id="closeSettingsBtn" class="btn btn-gray">Close</button>
+            </div>
+        </div>
+
+
+        <div id="allContentWrapper" class="w-full mt-6 hidden"> 
+            <div class="tab-nav">
+                <button class="tab-button active" data-tab="tech">Tech</button>
+                <button class="tab-button" data-tab="general">General</button>
+                <button class="tab-button" data-tab="movies_tv">Movies & TV</button>
+                <button class="tab-button" data-tab="automotive">Automotive</button>
+                <button class="tab-button" data-tab="lifestyle">Lifestyle</button>
+                <button class="tab-button" data-tab="science">Science</button>
+                <button class="tab-button" data-tab="business">Business</button>
+                <button class="tab-button" data-tab="finance">Finance</button>
+                <button class="tab-button" data-tab="politics">Politics</button>
+                <button class="tab-button" data-tab="health">Health</button>
+                <button class="tab-button" data-tab="world">World</button>
+                <button class="tab-button" data-tab="sports">Sports</button>
+                <button class="tab-button" data-tab="entertainment">Entertainment</button>
+                <button class="tab-button" data-tab="gaming">Gaming</button>
+                <button class="tab-button" data-tab="culture">Culture</button>
+                <button class="tab-button" data-tab="opinion">Opinion</button>
+                <button class="tab-button" data-tab="local">Local</button>
+                <button class="tab-button" data-tab="travel">Travel</button>
+                <button class="tab-button" data-tab="food">Food</button>
+                <button class="tab-button" data-tab="education">Education</button>
+            </div>
+
+            <div class="flex justify-center items-center space-x-4 my-4">
+                <button id="copyAllGeneratedBtn" class="btn btn-success hidden">
+                    Copy All Generated Stories
+                </button>
+                <button id="copyAndOpenNotebookBtn" class="btn btn-orange hidden">
+                    Copy All & Open NotebookLM
+                </button>
+            </div>
+
+            <div id="techNewsSection" data-tab-content="tech" class="news-section tab-content active">
+                <div class="news-section-header">
+                    <h2>Tech</h2>
+                    <button id="copyTechNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Tech</button>
+                    <button id="generateTechAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button>
+                </div>
+                <div id="techNewsContent" class="news-content-area">No tech stories generated yet.</div>
+            </div>
+            <div id="generalNewsSection" data-tab-content="general" class="news-section tab-content">
+                <div class="news-section-header">
+                    <h2>General</h2>
+                    <button id="copyGeneralNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy General</button>
+                    <button id="generateGeneralAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button>
+                </div>
+                <div id="generalNewsContent" class="news-content-area">No general stories generated yet.</div>
+            </div>
+            <div id="moviesTvNewsSection" data-tab-content="movies_tv" class="news-section tab-content">
+                 <div class="news-section-header">
+                    <h2>Movies & TV</h2>
+                    <button id="copyMoviesTvNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Movies/TV</button>
+                    <button id="generateMoviesTvAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button>
+                </div>
+                <div id="moviesTvNewsContent" class="news-content-area">No Movies & TV stories generated yet.</div>
+            </div>
+            <div id="automotiveNewsSection" data-tab-content="automotive" class="news-section tab-content">
+                <div class="news-section-header">
+                    <h2>Automotive</h2>
+                    <button id="copyAutomotiveNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Automotive</button>
+                    <button id="generateAutomotiveAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button>
+                </div>
+                <div id="automotiveNewsContent" class="news-content-area">No automotive stories generated yet.</div>
+            </div>
+            <div id="lifestyleNewsSection" data-tab-content="lifestyle" class="news-section tab-content">
+                <div class="news-section-header">
+                    <h2>Lifestyle</h2>
+                    <button id="copyLifestyleNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Lifestyle</button>
+                    <button id="generateLifestyleAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button>
+                </div>
+                <div id="lifestyleNewsContent" class="news-content-area">No lifestyle stories generated yet.</div>
+            </div>
+            <div id="scienceNewsSection" data-tab-content="science" class="news-section tab-content">
+                <div class="news-section-header">
+                    <h2>Science</h2>
+                    <button id="copyScienceNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Science</button>
+                    <button id="generateScienceAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button>
+                </div>
+                <div id="scienceNewsContent" class="news-content-area">No science stories generated yet.</div>
+            </div>
+
+            <div id="businessNewsSection" data-tab-content="business" class="news-section tab-content">
+                <div class="news-section-header"><h2>Business</h2><button id="copyBusinessNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Business</button><button id="generateBusinessAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="businessNewsContent" class="news-content-area">No business stories generated yet.</div>
+            </div>
+            <div id="financeNewsSection" data-tab-content="finance" class="news-section tab-content">
+                <div class="news-section-header"><h2>Finance</h2><button id="copyFinanceNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Finance</button><button id="generateFinanceAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="financeNewsContent" class="news-content-area">No finance stories generated yet.</div>
+            </div>
+            <div id="politicsNewsSection" data-tab-content="politics" class="news-section tab-content">
+                <div class="news-section-header"><h2>Politics</h2><button id="copyPoliticsNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Politics</button><button id="generatePoliticsAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="politicsNewsContent" class="news-content-area">No politics stories generated yet.</div>
+            </div>
+             <div id="healthNewsSection" data-tab-content="health" class="news-section tab-content">
+                <div class="news-section-header"><h2>Health</h2><button id="copyHealthNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Health</button><button id="generateHealthAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="healthNewsContent" class="news-content-area">No health stories generated yet.</div>
+            </div>
+            <div id="worldNewsSection" data-tab-content="world" class="news-section tab-content">
+                <div class="news-section-header"><h2>World</h2><button id="copyWorldNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy World</button><button id="generateWorldAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="worldNewsContent" class="news-content-area">No world stories generated yet.</div>
+            </div>
+            <div id="sportsNewsSection" data-tab-content="sports" class="news-section tab-content">
+                <div class="news-section-header"><h2>Sports</h2><button id="copySportsNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Sports</button><button id="generateSportsAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="sportsNewsContent" class="news-content-area">No sports stories generated yet.</div>
+            </div>
+            <div id="entertainmentNewsSection" data-tab-content="entertainment" class="news-section tab-content">
+                <div class="news-section-header"><h2>Entertainment</h2><button id="copyEntertainmentNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Entertainment</button><button id="generateEntertainmentAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="entertainmentNewsContent" class="news-content-area">No entertainment stories generated yet.</div>
+            </div>
+            <div id="gamingNewsSection" data-tab-content="gaming" class="news-section tab-content">
+                <div class="news-section-header"><h2>Gaming</h2><button id="copyGamingNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Gaming</button><button id="generateGamingAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="gamingNewsContent" class="news-content-area">No gaming stories generated yet.</div>
+            </div>
+            <div id="cultureNewsSection" data-tab-content="culture" class="news-section tab-content">
+                <div class="news-section-header"><h2>Culture</h2><button id="copyCultureNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Culture</button><button id="generateCultureAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="cultureNewsContent" class="news-content-area">No culture stories generated yet.</div>
+            </div>
+            <div id="opinionNewsSection" data-tab-content="opinion" class="news-section tab-content">
+                <div class="news-section-header"><h2>Opinion</h2><button id="copyOpinionNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Opinion</button><button id="generateOpinionAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="opinionNewsContent" class="news-content-area">No opinion stories generated yet.</div>
+            </div>
+            <div id="localNewsSection" data-tab-content="local" class="news-section tab-content">
+                <div class="news-section-header"><h2>Local</h2><button id="copyLocalNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Local</button><button id="generateLocalAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="localNewsContent" class="news-content-area">No local stories generated yet.</div>
+            </div>
+            <div id="travelNewsSection" data-tab-content="travel" class="news-section tab-content">
+                <div class="news-section-header"><h2>Travel</h2><button id="copyTravelNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Travel</button><button id="generateTravelAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="travelNewsContent" class="news-content-area">No travel stories generated yet.</div>
+            </div>
+            <div id="foodNewsSection" data-tab-content="food" class="news-section tab-content">
+                <div class="news-section-header"><h2>Food</h2><button id="copyFoodNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Food</button><button id="generateFoodAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="foodNewsContent" class="news-content-area">No food stories generated yet.</div>
+            </div>
+            <div id="educationNewsSection" data-tab-content="education" class="news-section tab-content">
+                <div class="news-section-header"><h2>Education</h2><button id="copyEducationNewsBtn" class="btn btn-success btn-sm text-xs hidden">Copy Education</button><button id="generateEducationAudioBtn" class="btn btn-primary btn-sm text-xs hidden">Generate Audio File</button></div>
+                <div id="educationNewsContent" class="news-content-area">No education stories generated yet.</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const categoryButtons = document.querySelectorAll('.category-button-group .btn');
+        const generateSelectedBtn = document.getElementById('generateSelectedBtn');
+        const copyAllGeneratedBtn = document.getElementById('copyAllGeneratedBtn');
+        const copyAndOpenNotebookBtn = document.getElementById('copyAndOpenNotebookBtn');
+        const selectAllCategoriesToggle = document.getElementById('selectAllCategoriesToggle');
+
+        
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const settingsPanelInner = document.getElementById('settingsPanelInner'); 
+        const settingsOverlay = document.getElementById('settingsOverlay');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+        
+        const settingsTabButtons = document.querySelectorAll('.settings-tab-button');
+        const settingsTabContents = document.querySelectorAll('.settings-tab-content');
+
+        const llmSelector = document.getElementById('llmSelector');
+        const blockedTermsInput = document.getElementById('blockedTermsInput');
+        const customHeaderTextInp = document.getElementById('customHeaderText');
+        const timeFrameSelector = document.getElementById('timeFrameSelector');
+        const customStoryInput = document.getElementById('customStoryInput');
+
+
+        const enableWeatherToggle = document.getElementById('enableWeatherToggle');
+        const latitudeInput = document.getElementById('latitudeInput');
+        const longitudeInput = document.getElementById('longitudeInput');
+        const enableGoogleTTSPlaybackToggle = document.getElementById('enableGoogleTTSPlaybackToggle');
+        const googleTTSVoiceSelector = document.getElementById('googleTTSVoiceSelector');
+        const sampleVoiceBtn = document.getElementById('sampleVoiceBtn');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioPlayerContainer = document.getElementById('audioPlayerContainer');
+
+
+        const geminiApiKeyInput = document.getElementById('geminiApiKey');
+        const anthropicApiKeyInput = document.getElementById('anthropicApiKey');
+        const openaiApiKeyInput = document.getElementById('openaiApiKey');
+        const enableGeminiToggle = document.getElementById('enableGeminiToggle');
+        const enableAnthropicToggle = document.getElementById('enableAnthropicToggle');
+        const enableOpenaiToggle = document.getElementById('enableOpenaiToggle');
+
+        const gnewsApiKeyInput = document.getElementById('gnewsApiKey');
+        const enableGnewsToggle = document.getElementById('enableGnewsToggle');
+        const newsapiOrgKeyInput = document.getElementById('newsapiOrgKey');
+        const enableNewsApiOrgToggle = document.getElementById('enableNewsApiOrgToggle');
+        const guardianApiKeyInput = document.getElementById('guardianApiKey');
+        const enableGuardianToggle = document.getElementById('enableGuardianToggle');
+        const nytApiKeyInput = document.getElementById('nytApiKey');
+        const enableNytToggle = document.getElementById('enableNytToggle');
+
+
+        const promptNewsProcessingInput = document.getElementById('promptNewsProcessing'); 
+        const promptFallbackTechInput = document.getElementById('promptFallbackTech');
+        const promptFallbackGeneralInput = document.getElementById('promptFallbackGeneral');
+        const promptFallbackMoviesTvInput = document.getElementById('promptFallbackMoviesTv');
+        const promptFallbackAutomotiveInput = document.getElementById('promptFallbackAutomotive');
+        const promptFallbackLifestyleInput = document.getElementById('promptFallbackLifestyle');
+        const promptFallbackScienceInput = document.getElementById('promptFallbackScience');
+
+
+        const statusMessage = document.getElementById('statusMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const loader = document.getElementById('loader');
+        
+        let mainTabButtons = document.querySelectorAll('#allContentWrapper .tab-nav .tab-button'); 
+        let mainTabContents = document.querySelectorAll('#allContentWrapper .tab-content'); 
+        const allContentWrapper = document.getElementById('allContentWrapper');
+
+
+        const sectionDetails = {
+            tech: { contentArea: document.getElementById('techNewsContent'), copyButton: document.getElementById('copyTechNewsBtn'), downloadAudioButton: document.getElementById('generateTechAudioBtn'), data: "", initialPlaceholder: "No tech stories generated yet.", button: document.querySelector('.btn[data-category="tech"]') },
+            general: { contentArea: document.getElementById('generalNewsContent'), copyButton: document.getElementById('copyGeneralNewsBtn'), downloadAudioButton: document.getElementById('generateGeneralAudioBtn'), data: "", initialPlaceholder: "No general stories generated yet.", button: document.querySelector('.btn[data-category="general"]') },
+            movies_tv: { contentArea: document.getElementById('moviesTvNewsContent'), copyButton: document.getElementById('copyMoviesTvNewsBtn'), downloadAudioButton: document.getElementById('generateMoviesTvAudioBtn'), data: "", initialPlaceholder: "No Movies & TV stories generated yet.", button: document.querySelector('.btn[data-category="movies_tv"]') },
+            automotive: { contentArea: document.getElementById('automotiveNewsContent'), copyButton: document.getElementById('copyAutomotiveNewsBtn'), downloadAudioButton: document.getElementById('generateAutomotiveAudioBtn'), data: "", initialPlaceholder: "No automotive stories generated yet.", button: document.querySelector('.btn[data-category="automotive"]') },
+            lifestyle: { contentArea: document.getElementById('lifestyleNewsContent'), copyButton: document.getElementById('copyLifestyleNewsBtn'), downloadAudioButton: document.getElementById('generateLifestyleAudioBtn'), data: "", initialPlaceholder: "No lifestyle stories generated yet.", button: document.querySelector('.btn[data-category="lifestyle"]') },
+            science: { contentArea: document.getElementById('scienceNewsContent'), copyButton: document.getElementById('copyScienceNewsBtn'), downloadAudioButton: document.getElementById('generateScienceAudioBtn'), data: "", initialPlaceholder: "No science stories generated yet.", button: document.querySelector('.btn[data-category="science"]') },
+            business: { contentArea: document.getElementById('businessNewsContent'), copyButton: document.getElementById('copyBusinessNewsBtn'), downloadAudioButton: document.getElementById('generateBusinessAudioBtn'), data: "", initialPlaceholder: "No business stories generated yet.", button: document.querySelector('.btn[data-category="business"]') },
+            finance: { contentArea: document.getElementById('financeNewsContent'), copyButton: document.getElementById('copyFinanceNewsBtn'), downloadAudioButton: document.getElementById('generateFinanceAudioBtn'), data: "", initialPlaceholder: "No finance stories generated yet.", button: document.querySelector('.btn[data-category="finance"]') },
+            politics: { contentArea: document.getElementById('politicsNewsContent'), copyButton: document.getElementById('copyPoliticsNewsBtn'), downloadAudioButton: document.getElementById('generatePoliticsAudioBtn'), data: "", initialPlaceholder: "No politics stories generated yet.", button: document.querySelector('.btn[data-category="politics"]') },
+            health: { contentArea: document.getElementById('healthNewsContent'), copyButton: document.getElementById('copyHealthNewsBtn'), downloadAudioButton: document.getElementById('generateHealthAudioBtn'), data: "", initialPlaceholder: "No health stories generated yet.", button: document.querySelector('.btn[data-category="health"]') },
+            world: { contentArea: document.getElementById('worldNewsContent'), copyButton: document.getElementById('copyWorldNewsBtn'), downloadAudioButton: document.getElementById('generateWorldAudioBtn'), data: "", initialPlaceholder: "No world stories generated yet.", button: document.querySelector('.btn[data-category="world"]') },
+            sports: { contentArea: document.getElementById('sportsNewsContent'), copyButton: document.getElementById('copySportsNewsBtn'), downloadAudioButton: document.getElementById('generateSportsAudioBtn'), data: "", initialPlaceholder: "No sports stories generated yet.", button: document.querySelector('.btn[data-category="sports"]') },
+            entertainment: { contentArea: document.getElementById('entertainmentNewsContent'), copyButton: document.getElementById('copyEntertainmentNewsBtn'), downloadAudioButton: document.getElementById('generateEntertainmentAudioBtn'), data: "", initialPlaceholder: "No entertainment stories generated yet.", button: document.querySelector('.btn[data-category="entertainment"]') },
+            gaming: { contentArea: document.getElementById('gamingNewsContent'), copyButton: document.getElementById('copyGamingNewsBtn'), downloadAudioButton: document.getElementById('generateGamingAudioBtn'), data: "", initialPlaceholder: "No gaming stories generated yet.", button: document.querySelector('.btn[data-category="gaming"]') },
+            culture: { contentArea: document.getElementById('cultureNewsContent'), copyButton: document.getElementById('copyCultureNewsBtn'), downloadAudioButton: document.getElementById('generateCultureAudioBtn'), data: "", initialPlaceholder: "No culture stories generated yet.", button: document.querySelector('.btn[data-category="culture"]') },
+            opinion: { contentArea: document.getElementById('opinionNewsContent'), copyButton: document.getElementById('copyOpinionNewsBtn'), downloadAudioButton: document.getElementById('generateOpinionAudioBtn'), data: "", initialPlaceholder: "No opinion stories generated yet.", button: document.querySelector('.btn[data-category="opinion"]') },
+            local: { contentArea: document.getElementById('localNewsContent'), copyButton: document.getElementById('copyLocalNewsBtn'), downloadAudioButton: document.getElementById('generateLocalAudioBtn'), data: "", initialPlaceholder: "No local stories generated yet.", button: document.querySelector('.btn[data-category="local"]') },
+            travel: { contentArea: document.getElementById('travelNewsContent'), copyButton: document.getElementById('copyTravelNewsBtn'), downloadAudioButton: document.getElementById('generateTravelAudioBtn'), data: "", initialPlaceholder: "No travel stories generated yet.", button: document.querySelector('.btn[data-category="travel"]') },
+            food: { contentArea: document.getElementById('foodNewsContent'), copyButton: document.getElementById('copyFoodNewsBtn'), downloadAudioButton: document.getElementById('generateFoodAudioBtn'), data: "", initialPlaceholder: "No food stories generated yet.", button: document.querySelector('.btn[data-category="food"]') },
+            education: { contentArea: document.getElementById('educationNewsContent'), copyButton: document.getElementById('copyEducationNewsBtn'), downloadAudioButton: document.getElementById('generateEducationAudioBtn'), data: "", initialPlaceholder: "No education stories generated yet.", button: document.querySelector('.btn[data-category="education"]') }
+        };
+        
+        const promptVersion = "_v2"; // Increment this if prompt structures change significantly
+
+        const defaultPrompts = {
+            newsProcessing: `<speak>\n{{CUSTOM_HEADER}}\n{{WEATHER_FORECAST}}\n\n{{PASTED_STORY_SSML}}\n\nYour task is to process raw news data for the '{{CATEGORY_NAME}}' category, covering the '{{TIME_FRAME_TEXT}}'. Raw data:\n{{RAW_NEWS_DATA}}\n\nIf a custom story is provided above (between USER-PROVIDED STORY START and END), you MUST include this story verbatim as the very first story in your SSML output, immediately after any custom header and weather forecast. Then proceed with generating 4-6 additional distinct stories for the '{{CATEGORY_NAME}}' category. Otherwise (if no custom story was provided), generate 5-7 distinct stories for the '{{CATEGORY_NAME}}' category. Each story needs a headline. Rewrite in a narrative style for a 15-20 minute spoken presentation (2500-3000 words total, including any pasted story). Prioritize stories from '{{TIME_FRAME_TEXT}}'. Do not copy snippets; synthesize, rephrase, expand. Maintain factual tone. After each story's narrative, include its source and publication date (if available from the raw data) like this: <p><s>Source: [Source Name], Published: [Date].</s></p> (Omit the URL from being spoken). Use <p> for paragraphs and <s> for sentences. Use <break time="500ms"/> after headlines and between major story elements.\n{{BLOCKED_TERMS_INSTRUCTION}}\n</speak>`,
+            fallbackBase: `<speak>\n{{CUSTOM_HEADER}}\n{{WEATHER_FORECAST}}\n\n{{PASTED_STORY_SSML}}\n\nIf a custom story was provided above (between USER-PROVIDED STORY START and END), you MUST include this story verbatim as the very first story in your SSML output, immediately after any custom header and weather forecast. Then generate 5-7 additional distinct, real {{CATEGORY_SUBJECT}} stories. Otherwise (if no custom story was provided), generate a collection of 6 to 8 distinct, real {{CATEGORY_SUBJECT}} stories. Total length for 15-20 minutes audio (2500-3000 words, including any pasted story). News from '{{TIME_FRAME_TEXT}}' (as of today, May 27, 2025), from reputable sources. Do not invent. Each story (350-500 words) needs: {{CATEGORY_SPECIFICS}}. Clear headline for each.\n\nExample Story SSML Structure:\n<p><s>**Headline: [Catchy Headline Based on Real Event]**</s><break time="500ms"/></p>\n<p><s>[Paragraph 1: Who, what, when (including date if key and available), where from verifiable info.]</s><s>[More details, background.]</s></p>\n<p><s>[Implications, perspectives, outlook. Attribute quotes generally if needed, e.g., "industry analysts said..."]</s></p>\n<p><s>[Further development or concluding thoughts.]</s></p>\n<p><s>Source: [Source Name].</s></p>\n\nEnsure factual content and in-depth overview. Use <p> for paragraphs, <s> for sentences, and <break time="500ms"/> for pauses where natural. When relevant for context or to establish recency within the '{{TIME_FRAME_TEXT}}', mention the approximate date of the event.\n{{BLOCKED_TERMS_INSTRUCTION}}\n</speak>`
+        };
+        
+        // --- Settings Panel Logic ---
+        settingsBtn.addEventListener('click', () => {
+            settingsPanel.style.display = 'flex'; 
+            settingsOverlay.style.display = 'block';
+            loadPersistentSettings(); 
+            if (settingsTabButtons.length > 0) settingsTabButtons[0].click(); 
+        });
+        closeSettingsBtn.addEventListener('click', () => {
+            settingsPanel.style.display = 'none';
+            settingsOverlay.style.display = 'none';
+        });
+        settingsOverlay.addEventListener('click', () => { 
+            settingsPanel.style.display = 'none';
+            settingsOverlay.style.display = 'none';
+        });
+
+        saveSettingsBtn.addEventListener('click', () => {
+            localStorage.setItem('geminiApiKey', geminiApiKeyInput.value);
+            localStorage.setItem('anthropicApiKey', anthropicApiKeyInput.value);
+            localStorage.setItem('openaiApiKey', openaiApiKeyInput.value);
+            localStorage.setItem('enableGemini', enableGeminiToggle.checked);
+            localStorage.setItem('enableAnthropic', enableAnthropicToggle.checked);
+            localStorage.setItem('enableOpenai', enableOpenaiToggle.checked);
+            localStorage.setItem('blockedTerms', blockedTermsInput.value);
+            localStorage.setItem('customHeaderText', customHeaderTextInp.value);
+            
+            localStorage.setItem('gnewsApiKey', gnewsApiKeyInput.value);
+            localStorage.setItem('enableGnews', enableGnewsToggle.checked);
+            localStorage.setItem('newsapiOrgKey', newsapiOrgKeyInput.value);
+            localStorage.setItem('enableNewsApiOrg', enableNewsApiOrgToggle.checked);
+            localStorage.setItem('guardianApiKey', guardianApiKeyInput.value);
+            localStorage.setItem('enableGuardian', enableGuardianToggle.checked);
+            localStorage.setItem('nytApiKey', nytApiKeyInput.value);
+            localStorage.setItem('enableNyt', enableNytToggle.checked);
+
+            localStorage.setItem('enableWeather', enableWeatherToggle.checked);
+            localStorage.setItem('latitude', latitudeInput.value);
+            localStorage.setItem('longitude', longitudeInput.value);
+            localStorage.setItem('enableGoogleTTSPlayback', enableGoogleTTSPlaybackToggle.checked);
+            localStorage.setItem('googleTTSVoice', googleTTSVoiceSelector.value);
+
+
+            localStorage.setItem('selectedLLM', llmSelector.value); 
+            localStorage.setItem('selectedTimeFrame', timeFrameSelector.value);
+
+
+            localStorage.setItem('promptNewsProcessing' + promptVersion, promptNewsProcessingInput.value);
+            localStorage.setItem('promptFallbackTech' + promptVersion, promptFallbackTechInput.value);
+            localStorage.setItem('promptFallbackGeneral' + promptVersion, promptFallbackGeneralInput.value);
+            localStorage.setItem('promptFallbackMoviesTv' + promptVersion, promptFallbackMoviesTvInput.value);
+            localStorage.setItem('promptFallbackAutomotive' + promptVersion, promptFallbackAutomotiveInput.value);
+            localStorage.setItem('promptFallbackLifestyle' + promptVersion, promptFallbackLifestyleInput.value);
+            localStorage.setItem('promptFallbackScience' + promptVersion, promptFallbackScienceInput.value);
+            
+            statusMessage.textContent = 'Settings saved!';
+            setTimeout(() => { 
+                updateInitialStatusMessage();
+            }, 2000);
+            settingsPanel.style.display = 'none';
+            settingsOverlay.style.display = 'none';
+            updateLlmSelectorOptions(); 
+        });
+
+        function loadPersistentSettings() {
+            geminiApiKeyInput.value = localStorage.getItem('geminiApiKey') || '';
+            anthropicApiKeyInput.value = localStorage.getItem('anthropicApiKey') || '';
+            openaiApiKeyInput.value = localStorage.getItem('openaiApiKey') || '';
+            
+            enableGeminiToggle.checked = localStorage.getItem('enableGemini') === 'true'; 
+            enableAnthropicToggle.checked = localStorage.getItem('enableAnthropic') === 'true';
+            enableOpenaiToggle.checked = localStorage.getItem('enableOpenai') === 'true';
+            blockedTermsInput.value = localStorage.getItem('blockedTerms') || '';
+            customHeaderTextInp.value = localStorage.getItem('customHeaderText') || '';
+            
+            gnewsApiKeyInput.value = localStorage.getItem('gnewsApiKey') || '';
+            enableGnewsToggle.checked = localStorage.getItem('enableGnews') === 'true';
+            newsapiOrgKeyInput.value = localStorage.getItem('newsapiOrgKey') || '';
+            enableNewsApiOrgToggle.checked = localStorage.getItem('enableNewsApiOrg') === 'true';
+            guardianApiKeyInput.value = localStorage.getItem('guardianApiKey') || '';
+            enableGuardianToggle.checked = localStorage.getItem('enableGuardian') === 'true';
+            nytApiKeyInput.value = localStorage.getItem('nytApiKey') || '';
+            enableNytToggle.checked = localStorage.getItem('enableNyt') === 'true';
+
+            enableWeatherToggle.checked = localStorage.getItem('enableWeather') === 'true';
+            latitudeInput.value = localStorage.getItem('latitude') || '';
+            longitudeInput.value = localStorage.getItem('longitude') || '';
+            enableGoogleTTSPlaybackToggle.checked = localStorage.getItem('enableGoogleTTSPlayback') === 'true';
+            googleTTSVoiceSelector.value = localStorage.getItem('googleTTSVoice') || 'en-US-Standard-C';
+
+
+            timeFrameSelector.value = localStorage.getItem('selectedTimeFrame') || '24h';
+            
+            promptNewsProcessingInput.value = localStorage.getItem('promptNewsProcessing' + promptVersion) || defaultPrompts.newsProcessing;
+            promptFallbackTechInput.value = localStorage.getItem('promptFallbackTech' + promptVersion) || defaultPrompts.fallbackBase.replace('{{CATEGORY_SUBJECT}}', 'technology').replace('{{CATEGORY_SPECIFICS}}', "covering verifiable innovations, new products, company updates, significant tech trends, or cybersecurity news from reputable tech news outlets and official sources.");
+            promptFallbackGeneralInput.value = localStorage.getItem('promptFallbackGeneral' + promptVersion) || defaultPrompts.fallbackBase.replace('{{CATEGORY_SUBJECT}}', 'general topics').replace('{{CATEGORY_SPECIFICS}}', "covering a variety of current events from reputable sources. Focus on major world events, significant societal developments, or noteworthy human interest stories.");
+            promptFallbackMoviesTvInput.value = localStorage.getItem('promptFallbackMoviesTv' + promptVersion) || defaultPrompts.fallbackBase.replace('{{CATEGORY_SUBJECT}}', 'movies and TV').replace('{{CATEGORY_SPECIFICS}}', "covering verifiable new releases, casting announcements, production updates, box office analysis, or critical reviews of films and television shows, based on information from established entertainment news sources and official studio announcements.");
+            promptFallbackAutomotiveInput.value = localStorage.getItem('promptFallbackAutomotive' + promptVersion) || defaultPrompts.fallbackBase.replace('{{CATEGORY_SUBJECT}}', 'automotive topics').replace('{{CATEGORY_SPECIFICS}}', "covering verifiable new vehicle releases, automotive industry trends, technological advancements in cars (like EVs, autonomous driving), motorsport news, or significant company news from reputable automotive publications and official sources.");
+            promptFallbackLifestyleInput.value = localStorage.getItem('promptFallbackLifestyle' + promptVersion) || defaultPrompts.fallbackBase.replace('{{CATEGORY_SUBJECT}}', 'lifestyle topics').replace('{{CATEGORY_SPECIFICS}}', "covering verifiable trends and news in areas such as home and garden, wellness, travel, personal development, fashion, or food, based on information from established lifestyle publications and reputable sources.");
+            promptFallbackScienceInput.value = localStorage.getItem('promptFallbackScience' + promptVersion) || defaultPrompts.fallbackBase.replace('{{CATEGORY_SUBJECT}}', 'science and nature').replace('{{CATEGORY_SPECIFICS}}', "covering verifiable scientific discoveries, research breakthroughs, space exploration, environmental news, and nature-related developments from reputable scientific journals and established science news outlets.");
+
+
+            updateLlmSelectorOptions(); 
+        }
+        
+        function updateLlmSelectorOptions() {
+            const previouslySelectedLLM = localStorage.getItem('selectedLLM') || ''; 
+            llmSelector.innerHTML = ''; 
+            console.log("Updating LLM Selector. Previously selected:", previouslySelectedLLM);
+
+            let optionsAdded = 0;
+            const geminiEnabled = localStorage.getItem('enableGemini') === 'true';
+            const geminiKey = localStorage.getItem('geminiApiKey'); 
+            console.log("Gemini Enabled:", geminiEnabled, "Gemini Key Present:", !!geminiKey);
+            if (geminiEnabled && geminiKey) { 
+                llmSelector.innerHTML += '<option value="gemini">Gemini</option>';
+                optionsAdded++;
+            }
+
+            const anthropicEnabled = localStorage.getItem('enableAnthropic') === 'true';
+            const anthropicKey = localStorage.getItem('anthropicApiKey');
+            console.log("Anthropic Enabled:", anthropicEnabled, "Anthropic Key Present:", !!anthropicKey);
+            if (anthropicEnabled && anthropicKey) {
+                llmSelector.innerHTML += '<option value="anthropic">Claude</option>';
+                optionsAdded++;
+            }
+
+            const openaiEnabled = localStorage.getItem('enableOpenai') === 'true';
+            const openaiKey = localStorage.getItem('openaiApiKey');
+            console.log("OpenAI Enabled:", openaiEnabled, "OpenAI Key Present:", !!openaiKey);
+            if (openaiEnabled && openaiKey) {
+                llmSelector.innerHTML += '<option value="openai">ChatGPT</option>';
+                optionsAdded++;
+            }
+            
+            if (optionsAdded === 0) {
+                llmSelector.innerHTML = '<option value="" disabled selected>No models enabled in Settings</option>';
+            } else {
+                if (Array.from(llmSelector.options).some(opt => opt.value === previouslySelectedLLM) && previouslySelectedLLM !== "") {
+                    llmSelector.value = previouslySelectedLLM;
+                } else if (llmSelector.options.length > 0) {
+                    llmSelector.value = llmSelector.options[0].value; 
+                }
+            }
+            updateInitialStatusMessage();
+        }
+
+        function updateInitialStatusMessage() {
+             if (llmSelector.options.length === 0 || (llmSelector.options.length > 0 && llmSelector.options[0].disabled)) {
+                 statusMessage.textContent = 'No AI models enabled. Please configure API keys and enable models in Settings.';
+             } else {
+                 statusMessage.textContent = 'Select categories, then click "Generate Stories..." or configure settings.';
+             }
+        }
+        
+        settingsTabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                settingsTabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const tabName = button.dataset.settingsTab;
+                settingsTabContents.forEach(content => {
+                    content.classList.toggle('active', content.dataset.settingsTabContent === tabName);
+                });
+            });
+        });
+
+        mainTabButtons.forEach(button => { 
+            button.addEventListener('click', () => {
+                mainTabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const tabName = button.dataset.tab;
+                mainTabContents.forEach(content => { 
+                    content.classList.toggle('active', content.dataset.tabContent === tabName);
+                });
+            });
+        });
+
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                button.classList.toggle('active');
+            });
+        });
+        
+        selectAllCategoriesToggle.addEventListener('change', (event) => {
+            categoryButtons.forEach(button => {
+                if (event.target.checked) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        });
+
+        generateSelectedBtn.addEventListener('click', handleGenerateSelectedNews);
+        copyAndOpenNotebookBtn.addEventListener('click', copyAllAndOpenNotebookLM);
+        sampleVoiceBtn.addEventListener('click', handleSampleVoice);
+
+
+        copyAllGeneratedBtn.addEventListener('click', copyAllGeneratedContentToClipboard);
+        Object.keys(sectionDetails).forEach(key => {
+            if (sectionDetails[key].copyButton) { 
+                sectionDetails[key].copyButton.addEventListener('click', () => copyCategoryContentToClipboard(key));
+            }
+            if(sectionDetails[key].downloadAudioButton) { 
+                sectionDetails[key].downloadAudioButton.addEventListener('click', () => generateAndDownloadAudioFile(key));
+            }
+        });
+
+        function getDatesForTimeFrame(timeFrame) {
+            const now = new Date();
+            let fromDate = new Date();
+            const toDate = now.toISOString().split('T')[0]; 
+
+            switch (timeFrame) {
+                case '24h':
+                    fromDate.setDate(now.getDate() - 1);
+                    break;
+                case '7d':
+                    fromDate.setDate(now.getDate() - 7);
+                    break;
+                case '30d':
+                    fromDate.setMonth(now.getMonth() - 1);
+                    break;
+                case '1y':
+                    fromDate.setFullYear(now.getFullYear() - 1);
+                    break;
+                default: 
+                    fromDate.setDate(now.getDate() - 1); 
+            }
+            return { from: fromDate.toISOString().split('T')[0], to: toDate };
+        }
+        
+        function getNYTDatesForTimeFrame(timeFrame) {
+            const now = new Date();
+            let beginDate = new Date();
+            const endDate = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+
+            switch (timeFrame) {
+                case '24h': beginDate.setDate(now.getDate() - 1); break;
+                case '7d': beginDate.setDate(now.getDate() - 7); break;
+                case '30d': beginDate.setMonth(now.getMonth() - 1); break;
+                case '1y': beginDate.setFullYear(now.getFullYear() - 1); break;
+                default: beginDate.setDate(now.getDate() - 1);
+            }
+            return { 
+                begin_date: `${beginDate.getFullYear()}${String(beginDate.getMonth() + 1).padStart(2, '0')}${String(beginDate.getDate()).padStart(2, '0')}`, 
+                end_date: endDate 
+            };
+        }
+
+        async function fetchLocalWeather() { 
+            if (localStorage.getItem('enableWeather') !== 'true') return "";
+            const lat = localStorage.getItem('latitude');
+            const lon = localStorage.getItem('longitude');
+            if (!lat || !lon) {
+                console.warn("Weather enabled but latitude/longitude missing.");
+                return "<p><s>Local weather could not be fetched (missing coordinates).</s></p><break time=\"500ms\"/>\n";
+            }
+            try {
+                const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&windspeed_unit=mph&timezone=auto`; 
+                const response = await fetch(weatherApiUrl);
+                if (!response.ok) throw new Error(`Weather API error (${response.status})`);
+                const weatherData = await response.json();
+                
+                let weatherString = "<p><s>--- CURRENT LOCAL WEATHER ---</s></p>\n"; 
+                if (weatherData.current_weather) {
+                    weatherString += `<p><s>Temperature: ${weatherData.current_weather.temperature}°F.</s><s>Wind: ${weatherData.current_weather.windspeed} mph.</s></p>\n`;
+                }
+                if (weatherData.daily) {
+                    weatherString += `<p><s>Today's Forecast: Maximum ${weatherData.daily.temperature_2m_max[0]}°F, Minimum ${weatherData.daily.temperature_2m_min[0]}°F.</s></p>\n`; 
+                }
+                weatherString += "<p><s>(Weather data from Open-Meteo)</s></p>\n<break time=\"700ms\"/>\n";
+                return weatherString;
+            } catch (e) {
+                console.error("Failed to fetch weather:", e);
+                return "<p><s>Error fetching local weather.</s></p><break time=\"500ms\"/>\n";
+            }
+        }
+
+
+        async function fetchNewsFromSources(categoryKey, blockedTerms, timeFrame) {
+            let allFetchedArticles = [];
+            const dates = getDatesForTimeFrame(timeFrame);
+            const nytDates = getNYTDatesForTimeFrame(timeFrame);
+            let fetchErrorOccurred = false;
+            let sourcesAttempted = 0;
+            let sourcesSucceeded = 0;
+            const maxArticlesPerSource = 7; 
+
+            async function fetchWithTimeout(resource, options, timeout = 8000) { 
+                const controller = new AbortController();
+                const id = setTimeout(() => controller.abort(), timeout);
+                const response = await fetch(resource, { ...options, signal: controller.signal });
+                clearTimeout(id);
+                return response;
+            }
+
+            const categoryKeywords = {
+                tech: 'technology OR innovation OR gadgets OR software OR AI OR computing OR science',
+                general: 'world news OR current events OR major developments', 
+                movies_tv: 'movies OR tv OR television OR cinema OR film OR streaming',
+                automotive: 'cars OR automotive OR vehicles OR electric vehicles OR auto industry',
+                lifestyle: 'lifestyle OR home and garden OR wellness OR travel OR personal development OR hobbies',
+                science: 'science OR nature OR research OR discovery OR environment OR space OR physics OR biology OR chemistry',
+                business: 'business OR economy OR markets OR companies OR startups',
+                finance: 'finance OR stocks OR investment OR banking OR financial planning',
+                politics: 'politics OR government OR elections OR policy',
+                health: 'health OR medicine OR wellness OR fitness OR nutrition',
+                world: 'world affairs OR international relations OR global events', 
+                sports: 'sports OR athletics OR games OR matches OR tournaments',
+                entertainment: 'entertainment news OR celebrity OR arts OR music OR events', 
+                gaming: 'video games OR gaming OR esports OR game development',
+                culture: 'culture OR arts OR society OR traditions OR heritage',
+                opinion: 'opinion OR editorial OR commentary OR viewpoints',
+                local: 'local news OR community events', 
+                travel: 'travel OR tourism OR destinations OR vacation',
+                food: 'food OR cuisine OR restaurants OR recipes OR cooking',
+                education: 'education OR schools OR learning OR universities OR students'
+            };
+            
+            const guardianSections = {
+                tech: 'technology',
+                general: 'world|us-news|uk-news',
+                movies_tv: 'film|tv-and-radio|stage',
+                automotive: 'technology|business|environment',
+                lifestyle: 'lifeandstyle|fashion|food|travel',
+                science: 'science|environment',
+                business: 'business|money',
+                finance: 'business|money|economics',
+                politics: 'politics|us-news|uk-news',
+                health: 'society|lifeandstyle',
+                world: 'world',
+                sports: 'sport',
+                entertainment: 'culture|film|tv-and-radio|music|games|stage',
+                gaming: 'games|technology',
+                culture: 'culture|artanddesign|books|music',
+                opinion: 'commentisfree',
+                local: 'uk/uk', 
+                travel: 'travel',
+                food: 'food|lifeandstyle',
+                education: 'education'
+            };
+
+
+            // GNews
+            if (localStorage.getItem('enableGnews') === 'true' && localStorage.getItem('gnewsApiKey')) {
+                sourcesAttempted++;
+                try {
+                    const gnewsKey = localStorage.getItem('gnewsApiKey');
+                    const query = categoryKeywords[categoryKey] || categoryKey; 
+                    const gnewsApiUrl = `https://gnews.io/api/v4/search?q=${encodeURIComponent(query)}&lang=en&max=${maxArticlesPerSource}&sortby=publishedAt&apikey=${gnewsKey}`; 
+                    statusMessage.textContent = `Fetching from GNews for ${categoryKey.replace(/_/g, ' & ')}...`;
+                    const response = await fetchWithTimeout(gnewsApiUrl);
+                    if (!response.ok) throw new Error(`GNews API Error (${response.status})`);
+                    const data = await response.json();
+                    if (data.articles && data.articles.length > 0) {
+                        sourcesSucceeded++;
+                        data.articles.forEach(a => allFetchedArticles.push({
+                            title: a.title, description: a.description, content: a.content, 
+                            url: a.url, source: `GNews - ${a.source.name}`, publishedAt: a.publishedAt
+                        }));
+                    }
+                } catch (e) { console.error("GNews fetch error:", e); fetchErrorOccurred = true; }
+            }
+
+            // NewsAPI.org
+            if (localStorage.getItem('enableNewsApiOrg') === 'true' && localStorage.getItem('newsapiOrgKey')) {
+                 sourcesAttempted++;
+                 try {
+                    const newsApiKey = localStorage.getItem('newsapiOrgKey');
+                    const query = categoryKeywords[categoryKey] || categoryKey;
+                    const newsApiUrl = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=en&pageSize=${maxArticlesPerSource}&from=${dates.from}&to=${dates.to}&sortBy=relevancy&apiKey=${newsApiKey}`;
+                    statusMessage.textContent = `Fetching from NewsAPI.org for ${categoryKey.replace(/_/g, ' & ')}...`;
+                    const response = await fetchWithTimeout(newsApiUrl);
+                    if (!response.ok) throw new Error(`NewsAPI.org Error (${response.status})`);
+                    const data = await response.json();
+                     if (data.articles && data.articles.length > 0) {
+                        sourcesSucceeded++;
+                        data.articles.forEach(a => allFetchedArticles.push({
+                            title: a.title, description: a.description, content: a.content, 
+                            url: a.url, source: `NewsAPI.org - ${a.source.name}`, publishedAt: a.publishedAt
+                        }));
+                    }
+                } catch (e) { console.error("NewsAPI.org fetch error:", e); fetchErrorOccurred = true; }
+            }
+            
+            // The Guardian
+            if (localStorage.getItem('enableGuardian') === 'true' && localStorage.getItem('guardianApiKey')) {
+                sourcesAttempted++;
+                try {
+                    const guardianKey = localStorage.getItem('guardianApiKey');
+                    const query = guardianSections[categoryKey] || categoryKey.replace(/_/g, '-'); 
+
+                    const guardianApiUrl = `https://content.guardianapis.com/search?q=${encodeURIComponent(categoryKeywords[categoryKey] || categoryKey)}&section=${query}&show-fields=bodyText,headline,trailText&page-size=${maxArticlesPerSource}&from-date=${dates.from}&to-date=${dates.to}&api-key=${guardianKey}`;
+                    statusMessage.textContent = `Fetching from The Guardian for ${categoryKey.replace(/_/g, ' & ')}...`;
+                    const response = await fetchWithTimeout(guardianApiUrl);
+                    if (!response.ok) throw new Error(`Guardian API Error (${response.status})`);
+                    const data = await response.json();
+                    if (data.response && data.response.results && data.response.results.length > 0) {
+                        sourcesSucceeded++;
+                        data.response.results.forEach(a => allFetchedArticles.push({
+                            title: a.webTitle, description: a.fields.trailText, content: a.fields.bodyText ? String(a.fields.bodyText).substring(0,1000) + '...' : '', 
+                            url: a.webUrl, source: "The Guardian", publishedAt: a.webPublicationDate
+                        }));
+                    }
+                } catch (e) { console.error("Guardian fetch error:", e); fetchErrorOccurred = true; }
+            }
+
+            // NY Times
+            if (localStorage.getItem('enableNyt') === 'true' && localStorage.getItem('nytApiKey')) {
+                sourcesAttempted++;
+                try {
+                    const nytKey = localStorage.getItem('nytApiKey');
+                    let nytQuery = categoryKeywords[categoryKey] || categoryKey.replace(/_/g, ' '); 
+                    
+                    const nytApiUrl = `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=${encodeURIComponent(nytQuery)}&begin_date=${nytDates.begin_date}&end_date=${nytDates.end_date}&sort=newest&api-key=${nytKey}`;
+                    statusMessage.textContent = `Fetching from NY Times for ${categoryKey.replace(/_/g, ' & ')}...`;
+                    const response = await fetchWithTimeout(nytApiUrl);
+                    if (!response.ok) throw new Error(`NYT API Error (${response.status})`);
+                    const data = await response.json();
+                    if (data.response && data.response.docs && data.response.docs.length > 0) {
+                        sourcesSucceeded++;
+                        data.response.docs.slice(0,maxArticlesPerSource).forEach(a => allFetchedArticles.push({ 
+                            title: a.headline.main, description: a.snippet, content: a.lead_paragraph, 
+                            url: a.web_url, source: a.source || "The New York Times", publishedAt: a.pub_date
+                        }));
+                    }
+                } catch (e) { console.error("NYT fetch error:", e); fetchErrorOccurred = true; }
+            }
+
+
+            if (allFetchedArticles.length === 0) {
+                 if(sourcesAttempted > 0 && sourcesSucceeded === 0 && fetchErrorOccurred) return "Error fetching from enabled news sources. The AI will generate content from its knowledge.";
+                return "No recent articles found from enabled news sources for this category. The AI will generate content from its knowledge.";
+            }
+
+            const uniqueArticles = Array.from(new Set(allFetchedArticles.map(a => a.title))) 
+                                     .map(title => allFetchedArticles.find(a => a.title === title));
+
+            let rawNewsData = "Fetched Articles (Please synthesize and expand upon these, focusing on the '{{TIME_FRAME_TEXT}}' timeframe):\n\n";
+            uniqueArticles.slice(0, 25).forEach((article, index) => { 
+                rawNewsData += `Article ${index + 1}:\n`;
+                rawNewsData += `Title: ${article.title || 'N/A'}\n`;
+                rawNewsData += `Description: ${article.description || 'N/A'}\n`;
+                rawNewsData += `Content Snippet: ${article.content ? String(article.content).substring(0, 500) + '...' : 'N/A'}\n`; 
+                rawNewsData += `Source: ${article.source || 'N/A'}\n`;
+                rawNewsData += `Published: ${article.publishedAt || 'N/A'}\n`;
+                rawNewsData += `URL: ${article.url || 'N/A'}\n\n`;
+            });
+            return rawNewsData;
+        }
+
+
+        async function callSelectedLLM(prompt, loadingMessage) {
+            const selectedLLM = llmSelector.value;
+            if (!selectedLLM) {
+                errorMessage.textContent = "No AI model selected or enabled. Please check Settings.";
+                statusMessage.textContent = "Generation failed: No AI model available.";
+                return Promise.reject("No AI model selected");
+            }
+
+            statusMessage.textContent = loadingMessage;
+            loader.classList.remove('hidden');
+            errorMessage.textContent = '';
+            disableAllActionButtons();
+
+            let apiKey;
+            let apiUrl;
+            let requestPayload;
+            let headers = { 'Content-Type': 'application/json' };
+            let textPathFunction;
+            console.log(`Calling LLM: ${selectedLLM} with prompt (first 200 chars):`, prompt.substring(0, 200) + "...");
+
+            try {
+                switch (selectedLLM) {
+                    case 'gemini':
+                        apiKey = localStorage.getItem('geminiApiKey'); 
+                        if (!apiKey) { 
+                             throw new Error("Gemini API Key not found in settings. Please add it to use Gemini.");
+                        }
+                        apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                        requestPayload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                        textPathFunction = (result) => result.candidates[0]?.content?.parts[0]?.text;
+                        break;
+                    case 'anthropic':
+                        apiKey = localStorage.getItem('anthropicApiKey');
+                        if (!apiKey) throw new Error("Anthropic API Key not found or Claude not enabled in settings.");
+                        apiUrl = 'https://api.anthropic.com/v1/messages'; 
+                        headers['x-api-key'] = apiKey;
+                        headers['anthropic-version'] = '2023-06-01';
+                        requestPayload = {
+                            model: "claude-3-opus-20240229", 
+                            max_tokens: 4096, 
+                            messages: [{ role: "user", content: prompt }]
+                        };
+                        textPathFunction = (result) => result.content[0]?.text;
+                        break;
+                    case 'openai':
+                        apiKey = localStorage.getItem('openaiApiKey');
+                        if (!apiKey) throw new Error("OpenAI API Key not found or ChatGPT not enabled in settings.");
+                        apiUrl = 'https://api.openai.com/v1/chat/completions';
+                        headers['Authorization'] = `Bearer ${apiKey}`;
+                        requestPayload = {
+                            model: "gpt-3.5-turbo-0125", 
+                            messages: [{ role: "user", content: prompt }],
+                        };
+                        textPathFunction = (result) => result.choices[0]?.message?.content;
+                        break;
+                    default:
+                        throw new Error("Invalid LLM selected.");
+                }
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(requestPayload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error(`${selectedLLM} API Error Data:`, errorData);
+                    let errorDetail = errorData.error?.message || (errorData.error_description || JSON.stringify(errorData));
+                    if (selectedLLM === 'anthropic' && errorData.type === 'error' && errorData.error) { 
+                        errorDetail = `${errorData.error.type}: ${errorData.error.message}`;
+                    }
+                     if (selectedLLM === 'openai' && errorData.error) {
+                        errorDetail = errorData.error.message;
+                    }
+                    throw new Error(`${selectedLLM} API Error (${response.status}): ${errorDetail}`);
+                }
+                const result = await response.json();
+                const text = textPathFunction(result);
+                
+                if (text) {
+                    return text;
+                } else {
+                    console.warn(`Unexpected response structure from ${selectedLLM} API:`, result);
+                    throw new Error(`Couldn't process the response from ${selectedLLM}.`);
+                }
+            } catch (error) {
+                console.error(`Error calling ${selectedLLM} API:`, error);
+                errorMessage.textContent = `API Interaction Failed with ${selectedLLM}: ${error.message}. Check API key and console.`;
+                throw error; 
+            } finally {
+                loader.classList.add('hidden');
+                enableAllActionButtons();
+            }
+        }
+
+        function getPromptFromStorage(promptKey, categoryKey) {
+            const versionedKey = promptKey + promptVersion;
+            const savedPrompt = localStorage.getItem(versionedKey);
+            if (savedPrompt) {
+                console.log("Loaded prompt from localStorage:", versionedKey);
+                return savedPrompt;
+            }
+            console.log("Using default prompt for:", promptKey, "(localStorage key not found:", versionedKey + ")");
+
+
+            if (promptKey === 'promptNewsProcessing') return defaultPrompts.newsProcessing; 
+            
+            let subject = "general topics"; 
+            let specifics = "covering a variety of current events from reputable sources. Focus on major world events, significant societal developments, or noteworthy human interest stories.";
+            // Add specifics for all new categories
+            const categorySpecificsMap = {
+                tech: "covering verifiable innovations, new products, company updates, significant tech trends, or cybersecurity news from reputable tech news outlets and official sources.",
+                movies_tv: "covering verifiable new releases, casting announcements, production updates, box office analysis, or critical reviews of films and television shows, based on information from established entertainment news sources and official studio announcements.",
+                automotive: "covering verifiable new vehicle releases, automotive industry trends, technological advancements in cars (like EVs, autonomous driving), motorsport news, or significant company news from reputable automotive publications and official sources.",
+                lifestyle: "covering verifiable trends and news in areas such as home and garden, wellness, travel, personal development, fashion, or food, based on information from established lifestyle publications and reputable sources.",
+                science: "covering verifiable scientific discoveries, research breakthroughs, space exploration, environmental news, and nature-related developments from reputable scientific journals and established science news outlets.",
+                business: "covering significant company news, market trends, economic developments, entrepreneurship, and corporate strategies from reputable business news sources.",
+                finance: "covering stock market analysis, investment strategies, personal finance advice, banking news, and financial regulations from established financial news outlets.",
+                politics: "covering government activities, elections, legislative developments, political campaigns, and international relations from reputable political news sources.",
+                health: "covering medical breakthroughs, public health issues, wellness advice, fitness trends, and nutrition information from trusted health organizations and news sources.",
+                world: "covering major international events, global affairs, conflicts, diplomacy, and significant developments from around the world from reputable international news services.",
+                sports: "covering results, analysis, and news from various sports including major leagues, tournaments, and athletic achievements from established sports news outlets.",
+                entertainment: "covering celebrity news, arts, music releases, cultural events, and general entertainment industry updates from reputable entertainment news sources.",
+                gaming: "covering video game releases, eSports, gaming industry news, hardware reviews, and trends in interactive entertainment from established gaming publications.",
+                culture: "covering societal trends, arts, literature, traditions, heritage, and cultural phenomena from reputable cultural news sources and publications.",
+                opinion: "presenting diverse viewpoints, editorials, and commentary on current events and societal issues from various columnists and thought leaders.",
+                local: "covering community events, local government news, human interest stories, and developments relevant to a specific geographic area (the AI should infer a general 'local' context if no specific location is provided).",
+                travel: "covering travel destinations, tourism news, travel tips, cultural experiences, and adventure travel from reputable travel publications.",
+                food: "covering culinary trends, restaurant reviews, recipes, food industry news, and nutritional information from established food and cooking publications.",
+                education: "covering news related to schools, universities, educational policies, learning methods, and advancements in the field of education from reputable sources."
+            };
+            subject = categoryKey.replace(/_/g, ' '); 
+            specifics = categorySpecificsMap[categoryKey] || specifics;
+
+
+            return defaultPrompts.fallbackBase
+                .replace('{{CATEGORY_SUBJECT}}', subject)
+                .replace('{{CATEGORY_SPECIFICS}}', specifics);
+        }
+
+        function getTimeFrameText(timeFrameValue) {
+            switch(timeFrameValue) {
+                case '24h': return 'last 24 hours';
+                case '7d': return 'last 7 days';
+                case '30d': return 'last 30 days';
+                case '1y': return 'past year';
+                default: return 'recent';
+            }
+        }
+
+
+        async function handleGenerateSelectedNews() {
+            const selectedCategories = [];
+            categoryButtons.forEach(button => {
+                if (button.classList.contains('active')) {
+                    selectedCategories.push(button.dataset.category);
+                }
+            });
+
+            if (selectedCategories.length === 0) {
+                errorMessage.textContent = "Please select at least one category to generate stories.";
+                statusMessage.textContent = "";
+                return;
+            }
+
+            const selectedLLMName = llmSelector.options[llmSelector.selectedIndex]?.text || "No Model Selected";
+            if (llmSelector.value === "" || !llmSelector.value) {
+                 errorMessage.textContent = "No AI model selected or enabled. Please check Settings.";
+                 statusMessage.textContent = "Generation failed: No AI model available.";
+                 return;
+            }
+
+            localStorage.setItem('selectedLLM', llmSelector.value); 
+            localStorage.setItem('selectedTimeFrame', timeFrameSelector.value);
+
+
+            disableAllActionButtons(); 
+            let overallSuccess = true;
+            let anyContentGenerated = false;
+
+            for (let i = 0; i < selectedCategories.length; i++) {
+                const categoryKey = selectedCategories[i];
+                const categoryDisplayName = categoryKey.replace(/_/g, ' & ');
+                const categoryButton = document.querySelector(`.category-button-group .btn[data-category="${categoryKey}"]`);
+                
+                statusMessage.textContent = `Generating Selected (${i + 1}/${selectedCategories.length}): Processing ${categoryDisplayName} with ${selectedLLMName}...`;
+                if (categoryButton) categoryButton.classList.add('btn-processing');
+
+                try {
+                    await handleGenerateCategoryNews(categoryKey, true); 
+                    if (sectionDetails[categoryKey].data && sectionDetails[categoryKey].data.trim() !== "") {
+                        anyContentGenerated = true;
+                    }
+                } catch (error) {
+                    console.error(`Error generating ${categoryDisplayName}:`, error);
+                    overallSuccess = false; 
+                } finally {
+                    if (categoryButton) categoryButton.classList.remove('btn-processing');
+                }
+            }
+
+            if (overallSuccess && anyContentGenerated) {
+                statusMessage.textContent = "Selected categories processed successfully!";
+            } else if (anyContentGenerated){
+                statusMessage.textContent = "Selected categories processed, but some may have had issues or no content.";
+            } else {
+                statusMessage.textContent = "Processing complete. No content was generated for selected categories.";
+            }
+            
+            enableAllActionButtons(); 
+            updateCopyAllGeneratedButtonVisibility();
+        }
+
+        function stripSSML(ssmlText) {
+            if (!ssmlText) return "";
+            let text = ssmlText;
+            text = text.replace(/<\/?speak>/gi, '');
+            text = text.replace(/<p><s>(.*?)<\/s><\/p>/gi, '$1\n'); 
+            text = text.replace(/<s>(.*?)<\/s>/gi, '$1 ');         
+            text = text.replace(/<p>(.*?)<\/p>/gi, '$1\n');        
+            text = text.replace(/<break\s+time=".*?"\s*\/>/gi, '\n'); 
+            text = text.replace(/<[^>]+>/g, '');
+            text = text.replace(/\n\s*\n/g, '\n\n');
+            return text.trim();
+        }
+
+        function formatPastedStoryToSSML(pastedText) {
+            if (!pastedText || pastedText.trim() === "") return "";
+            const cleaned = pastedText.replace(/\n\s*\n/g, '\n').trim();
+            const paragraphs = cleaned.split('\n').map(p => {
+                const sentences = p.split(/(?<=[.?!])\s+/).filter(s => s.trim() !== "");
+                return `<p>${sentences.map(s => `<s>${s.trim()}</s>`).join(' ')}</p>`;
+            }).join('\n');
+            return `<p><s>User Provided Story:</s><break time="300ms"/></p>\n${paragraphs}\n<p><s>Source: User Provided.</s></p><break time="500ms"/>\n`;
+        }
+
+
+        async function handleGenerateCategoryNews(categoryKey, isCalledFromGenerateAllOrSelected = false) {
+            const categoryConfig = sectionDetails[categoryKey];
+            const selectedLLMName = llmSelector.options[llmSelector.selectedIndex]?.text || "No Model Selected";
+            const categoryDisplayName = categoryKey.replace(/_/g, ' & ');
+            const currentTimeFrame = localStorage.getItem('selectedTimeFrame') || '24h'; 
+            const timeFrameText = getTimeFrameText(currentTimeFrame);
+            
+            if (!isCalledFromGenerateAllOrSelected && (llmSelector.value === "" || !llmSelector.value)) { 
+                 errorMessage.textContent = "No AI model selected or enabled. Please check Settings.";
+                 statusMessage.textContent = "Generation failed: No AI model available.";
+                 return;
+            }
+
+            if (localStorage.getItem('enableGoogleTTSPlayback') !== 'true') {
+                audioPlayerContainer.style.display = 'none'; 
+                audioPlayer.pause();
+                audioPlayer.src = ''; 
+            }
+
+
+            if (!isCalledFromGenerateAllOrSelected) { 
+                statusMessage.textContent = `Generating ${categoryDisplayName} with ${selectedLLMName}... This will take some time.`;
+            }
+            errorMessage.textContent = '';
+            
+            categoryConfig.contentArea.innerHTML = `<div class="p-4 text-gray-500">Generating content with ${selectedLLMName}...</div>`;
+            categoryConfig.data = ""; 
+            categoryConfig.copyButton.classList.add('hidden'); 
+            if(categoryConfig.downloadAudioButton) categoryConfig.downloadAudioButton.classList.add('hidden');
+
+            const userBlockedTerms = localStorage.getItem('blockedTerms') || ''; 
+            const customHeaderForLLM_SSML = (localStorage.getItem('customHeaderText') || '').trim();
+            const weatherEnabledForLLM = localStorage.getItem('enableWeather') === 'true';
+            let weatherStringForLLM_SSML = "";
+            const pastedStoryText = customStoryInput.value.trim();
+            const pastedStorySSML = formatPastedStoryToSSML(pastedStoryText);
+            console.log("Raw Pasted Story Text:", pastedStoryText);
+            console.log("Formatted Pasted Story SSML for Prompt:", pastedStorySSML);
+
+
+            if(weatherEnabledForLLM) {
+                weatherStringForLLM_SSML = await fetchLocalWeather(); 
+            }
+
+
+            let finalPromptTemplateKey = `promptFallback${categoryKey.charAt(0).toUpperCase() + categoryKey.slice(1).replace(/_/g, '').replace(/tv$/, 'Tv')}`;
+            let finalPromptTemplate = getPromptFromStorage(finalPromptTemplateKey, categoryKey);
+            let newsSourceInfo = `(using ${selectedLLMName}'s internal knowledge)`;
+            const useAnyExternalNews = 
+                (localStorage.getItem('enableGnews') === 'true' && localStorage.getItem('gnewsApiKey')) ||
+                (localStorage.getItem('enableNewsApiOrg') === 'true' && localStorage.getItem('newsapiOrgKey')) ||
+                (localStorage.getItem('enableGuardian') === 'true' && localStorage.getItem('guardianApiKey')) ||
+                (localStorage.getItem('enableNyt') === 'true' && localStorage.getItem('nytApiKey'));
+
+            let rawNewsDataForPrompt = "";
+
+            if (useAnyExternalNews) {
+                try {
+                    rawNewsDataForPrompt = await fetchNewsFromSources(categoryKey, userBlockedTerms, currentTimeFrame);
+                    if (!(rawNewsDataForPrompt.startsWith("No recent articles found") || rawNewsDataForPrompt.startsWith("Error fetching from news sources"))) {
+                        finalPromptTemplateKey = 'promptNewsProcessing';
+                        finalPromptTemplate = getPromptFromStorage(finalPromptTemplateKey, categoryKey);
+                        newsSourceInfo = `(processing stories fetched from external APIs with ${selectedLLMName})`;
+                    } else {
+                         if (!isCalledFromGenerateAllOrSelected) statusMessage.textContent = rawNewsDataForPrompt + " Falling back to AI's internal knowledge.";
+                    }
+                } catch (fetchError) {
+                    if (!isCalledFromGenerateAllOrSelected) errorMessage.textContent = `News fetch failed: ${fetchError.message}. Falling back to AI's internal knowledge.`;
+                    console.error("News Fetch Error:", fetchError);
+                    // Fallback template is already set
+                }
+            } else {
+                 if (!isCalledFromGenerateAllOrSelected) { 
+                    statusMessage.textContent = "External news fetching disabled or no keys provided. AI generating from internal knowledge.";
+                 }
+            }
+            console.log("Using prompt template key:", finalPromptTemplateKey + promptVersion);
+            
+            let finalPrompt = finalPromptTemplate
+                .replace('{{RAW_NEWS_DATA}}', rawNewsDataForPrompt)
+                .replace('{{CATEGORY_NAME}}', categoryDisplayName)
+                .replace('{{TIME_FRAME_TEXT}}', timeFrameText)
+                .replace('{{CUSTOM_HEADER}}', customHeaderForLLM_SSML ? `<p><s>${customHeaderForLLM_SSML}</s></p><break time="700ms"/>` : '')
+                .replace('{{WEATHER_FORECAST}}', weatherStringForLLM_SSML) 
+                .replace('{{PASTED_STORY_SSML}}', pastedStorySSML)
+                .replace('{{BLOCKED_TERMS_INSTRUCTION}}', (userBlockedTerms && userBlockedTerms.trim() !== "") ? `\n\nIMPORTANT: Strictly avoid generating any content related to the following terms or topics: ${userBlockedTerms}.` : "");
+
+            if (finalPromptTemplateKey.startsWith('promptFallback')) { // Only replace these if it's a fallback prompt
+                 let subject = "general topics";
+                 let specifics = "covering a variety of current events from reputable sources. Focus on major world events, significant societal developments, or noteworthy human interest stories.";
+                 const categorySpecificsMap = {
+                    tech: "covering verifiable innovations, new products, company updates, significant tech trends, or cybersecurity news from reputable tech news outlets and official sources.",
+                    movies_tv: "covering verifiable new releases, casting announcements, production updates, box office analysis, or critical reviews of films and television shows, based on information from established entertainment news sources and official studio announcements.",
+                    automotive: "covering verifiable new vehicle releases, automotive industry trends, technological advancements in cars (like EVs, autonomous driving), motorsport news, or significant company news from reputable automotive publications and official sources.",
+                    lifestyle: "covering verifiable trends and news in areas such as home and garden, wellness, travel, personal development, fashion, or food, based on information from established lifestyle publications and reputable sources.",
+                    science: "covering verifiable scientific discoveries, research breakthroughs, space exploration, environmental news, and nature-related developments from reputable scientific journals and established science news outlets.",
+                    business: "covering significant company news, market trends, economic developments, entrepreneurship, and corporate strategies from reputable business news sources.",
+                    finance: "covering stock market analysis, investment strategies, personal finance advice, banking news, and financial regulations from established financial news outlets.",
+                    politics: "covering government activities, elections, legislative developments, political campaigns, and international relations from reputable political news sources.",
+                    health: "covering medical breakthroughs, public health issues, wellness advice, fitness trends, and nutrition information from trusted health organizations and news sources.",
+                    world: "covering major international events, global affairs, conflicts, diplomacy, and significant developments from around the world from reputable international news services.",
+                    sports: "covering results, analysis, and news from various sports including major leagues, tournaments, and athletic achievements from established sports news outlets.",
+                    entertainment: "covering celebrity news, arts, music releases, cultural events, and general entertainment industry updates from reputable entertainment news sources.",
+                    gaming: "covering video game releases, eSports, gaming industry news, hardware reviews, and trends in interactive entertainment from established gaming publications.",
+                    culture: "covering societal trends, arts, literature, traditions, heritage, and cultural phenomena from reputable cultural news sources and publications.",
+                    opinion: "presenting diverse viewpoints, editorials, and commentary on current events and societal issues from various columnists and thought leaders.",
+                    local: "covering community events, local government news, human interest stories, and developments relevant to a specific geographic area (the AI should infer a general 'local' context if no specific location is provided).",
+                    travel: "covering travel destinations, tourism news, travel tips, cultural experiences, and adventure travel from reputable travel publications.",
+                    food: "covering culinary trends, restaurant reviews, recipes, food industry news, and nutritional information from established food and cooking publications.",
+                    education: "covering news related to schools, universities, educational policies, learning methods, and advancements in the field of education from reputable sources."
+                };
+                 subject = categoryKey.replace(/_/g, ' '); 
+                 specifics = categorySpecificsMap[categoryKey] || specifics;
+                 finalPrompt = finalPrompt.replace('{{CATEGORY_SUBJECT}}', subject).replace('{{CATEGORY_SPECIFICS}}', specifics);
+            }
+            console.log("Final Prompt for " + categoryKey + ":", finalPrompt);
+
+
+            try {
+                const generatedSSML = await callSelectedLLM(finalPrompt, isCalledFromGenerateAllOrSelected ? statusMessage.textContent : `Crafting in-depth ${categoryDisplayName} stories ${newsSourceInfo}... 📝`);
+                categoryConfig.data = generatedSSML; 
+                console.log("LLM Response (SSML) for " + categoryKey + ":", categoryConfig.data);
+
+
+                if (categoryConfig.data && categoryConfig.data.trim() !== "") {
+                    categoryConfig.contentArea.textContent = categoryConfig.data; 
+                    categoryConfig.copyButton.classList.remove('hidden');
+                    if(categoryConfig.downloadAudioButton && localStorage.getItem('enableGoogleTTSPlayback') !== 'true' && localStorage.getItem('geminiApiKey')){
+                        categoryConfig.downloadAudioButton.classList.remove('hidden');
+                    }
+                } else {
+                    categoryConfig.contentArea.textContent = `${categoryConfig.initialPlaceholder} (No specific content generated by AI).`;
+                    categoryConfig.copyButton.classList.add('hidden');
+                    if(categoryConfig.downloadAudioButton) categoryConfig.downloadAudioButton.classList.add('hidden');
+                }
+                
+                if (!isCalledFromGenerateAllOrSelected) {
+                    statusMessage.textContent = `${categoryDisplayName} stories generated ${newsSourceInfo}!`;
+                }
+                mainTabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === categoryKey)); 
+                mainTabContents.forEach(content => content.classList.toggle('active', content.dataset.tabContent === categoryKey)); 
+                
+                updateCopyAllGeneratedButtonVisibility(); 
+
+                if (localStorage.getItem('enableGoogleTTSPlayback') === 'true' && categoryConfig.data && categoryConfig.data.trim() !== "") {
+                    let playThisAudio = !isCalledFromGenerateAllOrSelected;
+                    if(isCalledFromGenerateAllOrSelected){
+                        const selectedCategories = [];
+                        categoryButtons.forEach(button => {
+                            if (button.classList.contains('active')) {selectedCategories.push(button.dataset.category);}
+                        });
+                        if(categoryKey === selectedCategories[selectedCategories.length-1]) playThisAudio = true;
+                    }
+
+                    if(playThisAudio){
+                         await synthesizeAndPlayAudio(categoryConfig.data, false, categoryKey); 
+                    }
+                }
+
+
+            } catch (error) {
+                categoryConfig.contentArea.innerHTML = `<div class="p-4 text-red-500">Failed to load content. ${errorMessage.textContent || 'An unknown error occurred.'}</div>`;
+                categoryConfig.copyButton.classList.add('hidden');
+                if(categoryConfig.downloadAudioButton) categoryConfig.downloadAudioButton.classList.add('hidden');
+                if (!isCalledFromGenerateAllOrSelected) {
+                    statusMessage.textContent = `${categoryDisplayName} stories generation failed.`;
+                }
+                throw error; 
+            }
+        }
+        
+        async function handleSampleVoice() {
+            const sampleText = "Hello, this is a voice sample from Google Cloud Text-to-Speech.";
+            statusMessage.textContent = "Generating voice sample...";
+            
+            const sampleSSML = `<speak><s>${sampleText}</s></speak>`; 
+            const audioContent = await synthesizeAndPlayAudio(sampleSSML, false, "sample", true); 
+            
+            if (audioContent) { 
+                 statusMessage.textContent = "Voice sample played.";
+                 if (localStorage.getItem('enableGoogleTTSPlayback') !== 'true') { 
+                    setTimeout(() => { 
+                        if (audioPlayer.src && audioPlayer.src.includes(btoa(sampleSSML).substring(0,10))) { 
+                            audioPlayerContainer.style.display = 'none';
+                            audioPlayer.src = ""; 
+                        }
+                    }, 4000); 
+                 }
+            } else {
+                statusMessage.textContent = "Failed to generate or play voice sample. Check API key and console.";
+                audioPlayerContainer.style.display = 'none'; 
+            }
+        }
+
+        async function synthesizeAndPlayAudio(ssmlFromLLM, forDownload = false, categoryKey = 'audio', isSample = false) {
+            const googleCloudKey = localStorage.getItem('geminiApiKey'); 
+            if (!googleCloudKey) {
+                errorMessage.textContent = "Google Cloud API Key (for TTS) not found in settings.";
+                if (!isSample) audioPlayerContainer.style.display = 'none'; 
+                return null; 
+            }
+            const selectedTTSVoice = localStorage.getItem('googleTTSVoice') || 'en-US-Standard-C';
+            
+            let textToSynthesize = ssmlFromLLM; 
+
+            if (!textToSynthesize || textToSynthesize.trim() === "") {
+                 errorMessage.textContent = "No text provided for audio synthesis.";
+                 if (!isSample) audioPlayerContainer.style.display = 'none';
+                 return null;
+            }
+            
+            let finalSSML = textToSynthesize.trim();
+            if (!finalSSML.toLowerCase().startsWith("<speak>")) {
+                finalSSML = "<speak>" + finalSSML;
+            }
+            if (!finalSSML.toLowerCase().endsWith("</speak>")) {
+                finalSSML = finalSSML + "</speak>";
+            }
+
+            const SSML_CHAR_LIMIT = 4900; 
+            if (finalSSML.length > SSML_CHAR_LIMIT && !isSample) {
+                let originalLength = finalSSML.length;
+                console.warn(`SSML too long (${originalLength} chars), attempting to truncate for TTS.`);
+                
+                let coreContent = finalSSML.substring("<speak>".length, finalSSML.length - "</speak>".length);
+                
+                if (coreContent.length > (SSML_CHAR_LIMIT - 25)) { 
+                    let truncatedCore = coreContent.substring(0, SSML_CHAR_LIMIT - 25); 
+                    let lastSentenceEnd = truncatedCore.lastIndexOf('</s>');
+                    let lastParagraphEnd = truncatedCore.lastIndexOf('</p>');
+                    let cutPoint = Math.max(lastSentenceEnd > -1 ? lastSentenceEnd + 5 : -1, lastParagraphEnd > -1 ? lastParagraphEnd + 4 : -1);
+
+                    if (cutPoint > 0 && cutPoint < truncatedCore.length) {
+                        truncatedCore = truncatedCore.substring(0, cutPoint);
+                    }
+                    finalSSML = "<speak>" + truncatedCore + "</speak>";
+                    console.warn(`Audio content for ${categoryKey.replace(/_/g, ' & ')} was too long (${originalLength} chars) and has been truncated to approx ${finalSSML.length} chars for playback/download.`);
+                     if(!isCalledFromGenerateAllOrSelected && !isSample) { 
+                        errorMessage.textContent = `Warning: Audio content for ${categoryKey.replace(/_/g, ' & ')} was too long and truncated.`;
+                    }
+                }
+            }
+            
+            statusMessage.textContent = forDownload ? `Generating audio file for ${categoryKey.replace(/_/g, ' & ')}...` : "Synthesizing audio with Google Cloud TTS...";
+            if (!isSample) loader.classList.remove('hidden'); 
+            disableAllActionButtons();
+
+            try {
+                const ttsApiUrl = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${googleCloudKey}`;
+                const requestBody = {
+                    input: { ssml: finalSSML }, 
+                    voice: { languageCode: 'en-US', name: selectedTTSVoice }, 
+                    audioConfig: { audioEncoding: 'MP3' }
+                };
+                const response = await fetch(ttsApiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Google TTS API Error (${response.status}): ${errorData.error?.message || 'Failed to synthesize audio'}`);
+                }
+                const result = await response.json();
+                if (result.audioContent) {
+                    if (forDownload) {
+                        return result.audioContent; 
+                    } else {
+                        audioPlayer.src = `data:audio/mp3;base64,${result.audioContent}`;
+                        if (localStorage.getItem('enableGoogleTTSPlayback') === 'true' || isSample) {
+                            audioPlayerContainer.style.display = 'flex'; 
+                            audioPlayer.play();
+                        } else {
+                             audioPlayerContainer.style.display = 'none';
+                        }
+                        statusMessage.textContent = isSample ? "Voice sample playing..." : "Audio synthesized. Playing...";
+                        return result.audioContent; 
+                    }
+                } else {
+                    throw new Error("No audio content received from Google TTS.");
+                }
+            } catch (e) {
+                console.error("Google TTS Error:", e);
+                errorMessage.textContent = `Audio synthesis failed: ${e.message}`;
+                if (!isSample) statusMessage.textContent = "Audio synthesis failed.";
+                audioPlayerContainer.style.display = 'none'; 
+                return null;
+            } finally {
+                if (!isSample) loader.classList.add('hidden');
+                enableAllActionButtons();
+            }
+        }
+
+        async function generateAndDownloadAudioFile(categoryKey) {
+            const categoryConfig = sectionDetails[categoryKey];
+            if (!categoryConfig.data || categoryConfig.data.trim() === "") { 
+                errorMessage.textContent = `No content generated for ${categoryKey.replace(/_/g, ' & ')} to create audio file.`;
+                return;
+            }
+            const audioContentBase64 = await synthesizeAndPlayAudio(categoryConfig.data, true, categoryKey);
+
+            if (audioContentBase64) {
+                try {
+                    const byteCharacters = atob(audioContentBase64);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], {type: 'audio/mp3'});
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `${categoryKey}_audio.mp3`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    statusMessage.textContent = `Audio file for ${categoryKey.replace(/_/g, ' & ')} downloaded.`;
+                } catch (downloadError) {
+                    console.error("Error downloading audio file:", downloadError);
+                    errorMessage.textContent = "Failed to download audio file.";
+                }
+            }
+        }
+        
+        async function copyToClipboard(ssmlText, buttonElement, successText, openNotebook = false) {
+            const plainTextFromSSML = stripSSML(ssmlText);             
+            const customHeaderForCopy = customHeaderTextInp.value.trim(); 
+            let weatherStringForCopy = "";
+            if (localStorage.getItem('enableWeather') === 'true') {
+                const weatherSSML = await fetchLocalWeather(); 
+                weatherStringForCopy = stripSSML(weatherSSML); 
+            }
+
+            let contentToCopy = "";
+            if (customHeaderForCopy) {
+                contentToCopy += `${customHeaderForCopy}\n\n`;
+            }
+            if (weatherStringForCopy && weatherStringForCopy.trim() !== "" && !weatherStringForCopy.startsWith("Error") && !weatherStringForCopy.startsWith("Local weather could not be fetched")) {
+                contentToCopy += `${weatherStringForCopy}\n\n`; 
+            }
+            contentToCopy += plainTextFromSSML;
+            console.log("Content being copied to clipboard:", contentToCopy);
+
+
+            if (!contentToCopy || contentToCopy.trim() === "") {
+                statusMessage.textContent = 'No content to copy.';
+                return false; 
+            }
+            const textArea = document.createElement("textarea");
+            textArea.value = contentToCopy;
+            textArea.style.position = "fixed"; 
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                statusMessage.textContent = successText;
+                if (buttonElement && !openNotebook) { 
+                    const originalButtonText = buttonElement.textContent.replace("Copied!", "").trim();
+                    buttonElement.textContent = 'Copied!';
+                    setTimeout(() => {
+                         buttonElement.textContent = originalButtonText;
+                    }, 2000);
+                }
+                if (openNotebook) {
+                    window.open('https://notebooklm.google.com/', '_blank');
+                }
+                return true; 
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                statusMessage.textContent = 'Failed to copy. Please try again or copy manually.';
+                errorMessage.textContent = 'Copying failed. Your browser might not support it or permission was denied.';
+                return false; 
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        }
+        
+        async function copyAllAndOpenNotebookLM() {
+            let allSSMLContent = "";
+            let generatedCount = 0;
+            const categoryOrder = ['tech', 'general', 'movies_tv', 'automotive', 'lifestyle', 'science', 'business', 'finance', 'politics', 'health', 'world', 'sports', 'entertainment', 'gaming', 'culture', 'opinion', 'local', 'travel', 'food', 'education']; 
+
+            categoryOrder.forEach(key => {
+                if (sectionDetails[key] && sectionDetails[key].data && sectionDetails[key].data.trim() !== "") {
+                    let categoryName = key.toUpperCase().replace(/_/g, ' & '); 
+                    allSSMLContent += `\n` + sectionDetails[key].data.trim() + "\n\n\n"; 
+                    generatedCount++;
+                }
+            });
+
+            if (generatedCount === 0) {
+                statusMessage.textContent = "No stories generated yet to copy.";
+                return;
+            }
+            
+            allSSMLContent = allSSMLContent.trim();
+            await copyToClipboard(allSSMLContent, copyAndOpenNotebookBtn, "All stories copied! Opening NotebookLM...", true);
+        }
+
+
+        async function copyCategoryContentToClipboard(categoryKey) { 
+            const categoryConfig = sectionDetails[categoryKey];
+            if (!categoryConfig.data || categoryConfig.data.trim() === "") {
+                statusMessage.textContent = `No ${categoryKey.replace(/_/g, ' & ')} stories generated yet to copy.`;
+                return;
+            }
+            await copyToClipboard(categoryConfig.data, categoryConfig.copyButton, `${categoryKey.replace(/_/g, ' & ')} stories copied!`);
+        }
+
+        async function copyAllGeneratedContentToClipboard() { 
+            let allSSMLContent = "";
+            let generatedCount = 0;
+            const categoryOrder = ['tech', 'general', 'movies_tv', 'automotive', 'lifestyle', 'science', 'business', 'finance', 'politics', 'health', 'world', 'sports', 'entertainment', 'gaming', 'culture', 'opinion', 'local', 'travel', 'food', 'education']; 
+
+            categoryOrder.forEach(key => {
+                if (sectionDetails[key] && sectionDetails[key].data && sectionDetails[key].data.trim() !== "") {
+                    let categoryName = key.toUpperCase().replace(/_/g, ' & '); 
+                    allSSMLContent += `\n` + sectionDetails[key].data.trim() + "\n\n\n"; 
+                    generatedCount++;
+                }
+            });
+
+            if (generatedCount === 0) {
+                statusMessage.textContent = "No stories generated yet to copy.";
+                return;
+            }
+            
+            allSSMLContent = allSSMLContent.trim();
+            await copyToClipboard(allSSMLContent, copyAllGeneratedBtn, "All generated stories copied!");
+        }
+        
+        function updateCopyAllGeneratedButtonVisibility() {
+            let anyGenerated = false;
+            for (const key in sectionDetails) {
+                if (sectionDetails[key].data && sectionDetails[key].data.trim() !== "") {
+                    anyGenerated = true;
+                    break;
+                }
+            }
+            copyAllGeneratedBtn.classList.toggle('hidden', !anyGenerated);
+            copyAndOpenNotebookBtn.classList.toggle('hidden', !anyGenerated); 
+            allContentWrapper.classList.toggle('hidden', !anyGenerated); 
+        }
+        
+        const allActionButtons = document.querySelectorAll('.category-button-group .btn, #generateSelectedBtn');
+        function disableAllActionButtons() {
+            allActionButtons.forEach(button => {
+                button.classList.add('btn-disabled'); button.disabled = true;
+            });
+        }
+        function enableAllActionButtons() {
+            allActionButtons.forEach(button => {
+                button.classList.remove('btn-disabled'); button.disabled = false;
+            });
+        }
+        
+        // Initial state
+         document.addEventListener('DOMContentLoaded', () => {
+            loadPersistentSettings(); 
+            updateCopyAllGeneratedButtonVisibility(); 
+            if (mainTabButtons.length > 0 && mainTabButtons[0]) mainTabButtons[0].click(); 
+
+            audioPlayerContainer.style.display = 'none'; 
+            settingsPanel.style.display = 'none'; 
+            settingsOverlay.style.display = 'none'; 
+        });
+
+    </script>
+</body>
+</html>
