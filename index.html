@@ -3,13 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>AI News Feed App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; background: #f9f9f9; }
-        h1 { font-size: 3rem; color: #333; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f7f9fb;
+            color: #22223b;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(60,60,100,0.08);
+            padding: 2.5rem 2rem 2rem 2rem;
+        }
+        h1 {
+            font-size: 2.7rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #3a3a5a;
+            letter-spacing: -1px;
+        }
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: #4a55a2;
+        }
+        p, ul {
+            font-size: 1.08rem;
+            line-height: 1.7;
+            margin-bottom: 1.2rem;
+        }
+        ul {
+            padding-left: 1.2rem;
+        }
+        .screenshots {
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            margin: 2.5rem 0;
+        }
+        .screenshot {
+            background: #f4f7fa;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(60,60,100,0.06);
+            padding: 1.2rem;
+            text-align: center;
+        }
+        .screenshot img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(60,60,100,0.08);
+            margin-bottom: 0.7rem;
+        }
+        .repo-link {
+            display: inline-block;
+            margin-top: 2.5rem;
+            padding: 0.85rem 2.2rem;
+            background: #4a55a2;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(60,60,100,0.08);
+            transition: background 0.18s;
+        }
+        .repo-link:hover {
+            background: #2d356d;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 1.2rem; }
+            h1 { font-size: 2rem; }
+            h2 { font-size: 1.15rem; }
+            .screenshots { gap: 1.2rem; }
+        }
     </style>
 </head>
 <body>
-    <h1>Hello World</h1>
+    <div class="container">
+        <h1>AI News Feed App</h1>
+        <p><strong>AI News Feed</strong> is a modern web application that generates in-depth, AI-powered news stories across 20+ categories. It leverages multiple AI models (Gemini, Claude, ChatGPT) and can fetch real news from APIs like GNews, NewsAPI.org, The Guardian, and NY Times. The app is designed for flexibility, customizability, and ease of use.</p>
+
+        <h2>Key Features</h2>
+        <ul>
+            <li>Generate news stories in 20+ categories (Tech, Science, Movies, etc.)</li>
+            <li>Choose from multiple AI models: Gemini, Claude, ChatGPT</li>
+            <li>Integrate with real news APIs for up-to-date content</li>
+            <li>Text-to-speech audio generation (Google Cloud TTS)</li>
+            <li>Custom story input and local weather integration</li>
+            <li>Copy to clipboard and NotebookLM integration</li>
+            <li>Modern, responsive, and user-friendly interface</li>
+        </ul>
+
+        <h2>App Screenshots</h2>
+        <div class="screenshots">
+            <div class="screenshot">
+                <img src="docs/images/main-interface.png" alt="Main Interface Screenshot">
+                <div>Main interface: category selection and story generation</div>
+            </div>
+            <div class="screenshot">
+                <img src="docs/images/settings-panel.png" alt="Settings Panel Screenshot">
+                <div>Settings panel: configure API keys and preferences</div>
+            </div>
+            <div class="screenshot">
+                <img src="docs/images/generated-content.png" alt="Generated Content Screenshot">
+                <div>Generated content: view, copy, and generate audio</div>
+            </div>
+        </div>
+
+        <h2>Get the Source Code</h2>
+        <a class="repo-link" href="https://github.com/davidsnyder-nc/ainews" target="_blank">View on GitHub</a>
+    </div>
 </body>
 </html> 
