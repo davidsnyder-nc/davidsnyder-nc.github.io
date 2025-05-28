@@ -43,11 +43,27 @@
         ul {
             padding-left: 1.2rem;
         }
-        .screenshots {
+        .screenshot-switcher {
             display: flex;
-            flex-direction: column;
-            gap: 2.5rem;
-            margin: 2.5rem 0;
+            gap: 1rem;
+            margin: 2.5rem 0 1.5rem 0;
+            justify-content: center;
+        }
+        .switch-btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 7px;
+            background: #e0e7ff;
+            color: #4338ca;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s;
+        }
+        .switch-btn.active, .switch-btn:focus {
+            background: #4a55a2;
+            color: #fff;
+            outline: none;
         }
         .screenshot {
             background: #f4f7fa;
@@ -55,6 +71,11 @@
             box-shadow: 0 2px 8px rgba(60,60,100,0.06);
             padding: 1.2rem;
             text-align: center;
+            display: none;
+            max-width: 100%;
+        }
+        .screenshot.active {
+            display: block;
         }
         .screenshot img {
             max-width: 100%;
@@ -82,7 +103,7 @@
             .container { padding: 1.2rem; }
             h1 { font-size: 2rem; }
             h2 { font-size: 1.15rem; }
-            .screenshots { gap: 1.2rem; }
+            .screenshot-switcher { flex-direction: column; gap: 0.5rem; }
         }
     </style>
 </head>
@@ -102,24 +123,49 @@
             <li>Modern, responsive, and user-friendly interface</li>
         </ul>
 
+        <h2>🚀 Coming Soon</h2>
+        <ul>
+            <li><strong>Scheduled Generation:</strong><br><span style="color:#555">Set specific times to auto-generate and optionally auto-download stories or audio.</span></li>
+            <li><strong>RSS Feed Output:</strong><br><span style="color:#555">Generate a valid RSS/Atom feed for integration into podcast apps or feed readers.</span></li>
+            <li><strong>Email Digest Export:</strong><br><span style="color:#555">Send generated content as a styled email to a specified address or mailing list.</span></li>
+            <li><strong>Mobile-Optimized UI:</strong><br><span style="color:#555">Ensure full responsive design with swipe gestures and touch-friendly controls.</span></li>
+            <li><strong>Dark Mode / Theme Customization:</strong><br><span style="color:#555">User-selectable color themes with localStorage persistence.</span></li>
+            <li><strong>Multi-Language Support:</strong><br><span style="color:#555">Use translation APIs to offer story generation in other languages with matching TTS voices.</span></li>
+        </ul>
+
         <h2>App Screenshots</h2>
-        <div class="screenshots">
-            <div class="screenshot">
-                <img src="docs/images/main-interface.png" alt="Main Interface Screenshot">
-                <div>Main interface: category selection and story generation</div>
-            </div>
-            <div class="screenshot">
-                <img src="docs/images/settings-panel.png" alt="Settings Panel Screenshot">
-                <div>Settings panel: configure API keys and preferences</div>
-            </div>
-            <div class="screenshot">
-                <img src="docs/images/generated-content.png" alt="Generated Content Screenshot">
-                <div>Generated content: view, copy, and generate audio</div>
-            </div>
+        <div class="screenshot-switcher">
+            <button class="switch-btn active" onclick="showScreenshot(0)">Main Interface</button>
+            <button class="switch-btn" onclick="showScreenshot(1)">Settings Panel</button>
+            <button class="switch-btn" onclick="showScreenshot(2)">Generated Content</button>
+        </div>
+        <div class="screenshot active" id="screenshot-0">
+            <img src="/images/main-interface.png" alt="Main Interface Screenshot">
+            <div>Main interface: category selection and story generation</div>
+        </div>
+        <div class="screenshot" id="screenshot-1">
+            <img src="/images/settings-panel.png" alt="Settings Panel Screenshot">
+            <div>Settings panel: configure API keys and preferences</div>
+        </div>
+        <div class="screenshot" id="screenshot-2">
+            <img src="/images/generated-content.png" alt="Generated Content Screenshot">
+            <div>Generated content: view, copy, and generate audio</div>
         </div>
 
         <h2>Get the Source Code</h2>
         <a class="repo-link" href="https://github.com/davidsnyder-nc/ainews" target="_blank">View on GitHub</a>
     </div>
+    <script>
+        function showScreenshot(idx) {
+            var screenshots = document.querySelectorAll('.screenshot');
+            var buttons = document.querySelectorAll('.switch-btn');
+            screenshots.forEach((el, i) => {
+                el.classList.toggle('active', i === idx);
+            });
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === idx);
+            });
+        }
+    </script>
 </body>
 </html> 
