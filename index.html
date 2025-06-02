@@ -3,214 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI News Feed App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>GitHub Projects</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background: #f7f9fb;
-            color: #22223b;
-            margin: 0;
-            padding: 0;
+            background-color: #f0f4f8;
+            color: #1f2937;
         }
-        .topnav {
-            width: 100%;
-            background: #fff;
-            box-shadow: 0 2px 12px rgba(60,60,100,0.06);
-            padding: 0.7rem 0;
-            display: flex;
-            justify-content: center;
-            gap: 1.2rem;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .nav-btn {
-            padding: 0.7rem 1.7rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.08rem;
-            font-weight: 600;
-            background: #e0e7ff;
-            color: #4338ca;
-            cursor: pointer;
-            transition: background 0.18s, color 0.18s;
-            box-shadow: 0 1px 4px rgba(60,60,100,0.04);
-        }
-        .nav-btn.primary, .nav-btn.active {
-            background: #4a55a2;
-            color: #fff;
-        }
-        .nav-btn.disabled {
-            background: #e5e7eb;
-            color: #a0aec0;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-        .container {
-            max-width: 900px;
-            margin: 40px auto 40px auto;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(60,60,100,0.08);
-            padding: 2.5rem 2rem 2rem 2rem;
-        }
-        h1 {
-            font-size: 2.7rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: #3a3a5a;
-            letter-spacing: -1px;
-        }
-        h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-top: 2.5rem;
-            margin-bottom: 1rem;
-            color: #4a55a2;
-        }
-        p, ul {
-            font-size: 1.08rem;
-            line-height: 1.7;
-            margin-bottom: 1.2rem;
-        }
-        ul {
-            padding-left: 1.2rem;
-        }
-        .screenshot-switcher {
-            display: flex;
-            gap: 1rem;
-            margin: 2.5rem 0 1.5rem 0;
-            justify-content: center;
-        }
-        .switch-btn {
-            padding: 0.7rem 1.5rem;
-            border: none;
-            border-radius: 7px;
-            background: #e0e7ff;
-            color: #4338ca;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.18s, color 0.18s;
-        }
-        .switch-btn.active, .switch-btn:focus {
-            background: #4a55a2;
-            color: #fff;
-            outline: none;
-        }
-        .screenshot {
-            background: #f4f7fa;
+        .repo-card {
+            background-color: white;
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(60,60,100,0.06);
-            padding: 1.2rem;
-            text-align: center;
-            display: none;
-            max-width: 100%;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
         }
-        .screenshot.active {
-            display: block;
-        }
-        .screenshot img {
-            max-width: 100%;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(60,60,100,0.08);
-            margin-bottom: 0.7rem;
-        }
-        .repo-link {
-            display: inline-block;
-            margin-top: 2.5rem;
-            padding: 0.85rem 2.2rem;
-            background: #4a55a2;
-            color: #fff;
-            font-weight: 600;
-            font-size: 1.1rem;
-            border-radius: 8px;
+        .repo-title a {
+            color: #4f46e5;
             text-decoration: none;
-            box-shadow: 0 2px 8px rgba(60,60,100,0.08);
-            transition: background 0.18s;
         }
-        .repo-link:hover {
-            background: #2d356d;
+        .repo-title a:hover {
+            text-decoration: underline;
         }
-        @media (max-width: 700px) {
-            .container { padding: 1.2rem; }
-            h1 { font-size: 2rem; }
-            h2 { font-size: 1.15rem; }
-            .screenshot-switcher { flex-direction: column; gap: 0.5rem; }
-            .topnav { flex-direction: column; gap: 0.5rem; padding: 0.5rem 0; }
+        .repo-description {
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+        /* .repo-stats class is no longer used but kept for potential future use */
+        .repo-stats span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        .view-button {
+            background-color: #4f46e5;
+            color: white;
+            border: 1px solid transparent;
+        }
+        .view-button:hover {
+            background-color: #4338ca;
         }
     </style>
 </head>
-<body>
-    <nav class="topnav">
-        <button class="nav-btn primary active">AI News</button>
-        <button class="nav-btn disabled">More Apps Coming Soon</button>
-    </nav>
-    <div class="container">
-        <div style="overflow:hidden;">
-            <img src="/images/logo.png" alt="AI News Logo" style="max-width:120px;width:30vw;height:auto;float:right;margin-left:2rem;margin-bottom:0.5rem;">
-            <h1 style="margin-top:0;">AI News Feed App</h1>
-            <p><strong>AI News Feed</strong> is a modern web application that generates in-depth, AI-powered news stories across 20+ categories. It leverages multiple AI models (Gemini, Claude, ChatGPT) and can fetch real news from APIs like GNews, NewsAPI.org, The Guardian, and NY Times. The app is designed for flexibility, customizability, and ease of use.</p>
-        </div>
-        <h2>Key Features</h2>
-        <ul>
-            <li>⚡ Single HTML file, no dependencies – run anywhere instantly.</li>
-            <li>📰 Generate news stories in 20+ categories (Tech, Science, Movies, etc.)</li>
-            <li>🤖 Choose from multiple AI models: Gemini, Claude, ChatGPT</li>
-            <li>🌐 Integrate with real news APIs for up-to-date content</li>
-            <li>🔊 Text-to-speech audio generation (Google Cloud TTS)</li>
-            <li>📝 Custom story input and local weather integration</li>
-            <li>📋 Copy to clipboard and NotebookLM integration</li>
-            <li>💻 Modern, responsive, and user-friendly interface</li>
-            <li>📱 Mobile-Optimized UI: fully responsive with touch-friendly controls</li>
-        </ul>
+<body class="text-gray-800">
+    <div class="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
+        <header class="text-center mb-12">
+             <h1 class="text-3xl font-bold text-gray-900">GitHub Projects</h1>
+        </header>
 
-        <h2>🚀 Coming Soon</h2>
-        <ul>
-            <li><strong>Scheduled Generation:</strong><br><span style="color:#555">Set specific times to auto-generate and optionally auto-download stories or audio.</span></li>
-            <li><strong>RSS Feed Output:</strong><br><span style="color:#555">Generate a valid RSS/Atom feed for integration into podcast apps or feed readers.</span></li>
-            <li><strong>Email Digest Export:</strong><br><span style="color:#555">Send generated content as a styled email to a specified address or mailing list.</span></li>
-            <li><strong>Dark Mode / Theme Customization:</strong><br><span style="color:#555">User-selectable color themes with localStorage persistence.</span></li>
-            <li><strong>Multi-Language Support:</strong><br><span style="color:#555">Use translation APIs to offer story generation in other languages with matching TTS voices.</span></li>
-        </ul>
+        <div id="repos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
 
-        <h2>App Screenshots</h2>
-        <div class="screenshot-switcher">
-            <button class="switch-btn active" onclick="showScreenshot(0)">Main Interface</button>
-            <button class="switch-btn" onclick="showScreenshot(1)">Settings Panel</button>
-            <button class="switch-btn" onclick="showScreenshot(2)">Generated Content</button>
-        </div>
-        <div class="screenshot active" id="screenshot-0">
-            <img src="/images/main-interface.png" alt="Main Interface Screenshot">
-            <div>Main interface: category selection and story generation</div>
-        </div>
-        <div class="screenshot" id="screenshot-1">
-            <img src="/images/settings-panel.png" alt="Settings Panel Screenshot">
-            <div>Settings panel: configure API keys and preferences</div>
-        </div>
-        <div class="screenshot" id="screenshot-2">
-            <img src="/images/generated-content.png" alt="Generated Content Screenshot">
-            <div>Generated content: view, copy, and generate audio</div>
+        <div id="loading-indicator" class="text-center mt-10">
+            <p class="text-2xl text-gray-700">Fetching projects...</p>
+             <div class="mt-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+                <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+            </div>
         </div>
 
-        <h2>Get the Source Code</h2>
-        <div style="display:flex;gap:1.2rem;justify-content:center;flex-wrap:wrap;margin-top:2.5rem;">
-          <a class="repo-link" href="https://github.com/davidsnyder-nc/ainews" target="_blank">View on GitHub</a>
-          <a class="repo-link" href="/demo/demo.html" style="background:#38a169; color:#fff;" target="_blank">Live Demo</a>
+        <div id="error-message" class="hidden text-center mt-10 bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-md shadow-md" role="alert">
+            <strong class="font-bold text-lg">Oops! Something went wrong.</strong>
+            <span class="block sm:inline mt-1">Could not fetch repositories. Please check your connection or try again later.</span>
         </div>
     </div>
+
     <script>
-        function showScreenshot(idx) {
-            var screenshots = document.querySelectorAll('.screenshot');
-            var buttons = document.querySelectorAll('.switch-btn');
-            screenshots.forEach((el, i) => {
-                el.classList.toggle('active', i === idx);
-            });
-            buttons.forEach((btn, i) => {
-                btn.classList.toggle('active', i === idx);
-            });
+        const username = 'davidsnyder-nc';
+        const reposToExclude = ['davidsnyder-nc.github.io', 'podcasts'];
+        const reposContainer = document.getElementById('repos-container');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const errorMessage = document.getElementById('error-message');
+
+        async function fetchRepos() {
+            try {
+                const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&direction=desc`);
+                if (!response.ok) {
+                    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+                }
+                let repos = await response.json();
+
+                repos = repos.filter(repo => !reposToExclude.includes(repo.name));
+
+                loadingIndicator.style.display = 'none';
+
+                if (repos.length === 0) {
+                    reposContainer.innerHTML = '<p class="text-center text-gray-600 col-span-full text-lg">No public repositories to display at the moment.</p>';
+                    return;
+                }
+
+                reposContainer.innerHTML = '';
+
+                repos.forEach(repo => {
+                    const repoCard = `
+                        <div class="repo-card p-6 flex flex-col justify-between">
+                            <div>
+                                <h2 class="repo-title text-xl font-semibold mb-2">
+                                    <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name}</a>
+                                </h2>
+                                <p class="repo-description mb-3">${repo.description || 'No description provided. Explore the project to learn more!'}</p>
+                            </div>
+                            <div>
+                                ${repo.language ? `<p class="mb-3 text-sm text-gray-500">Language: <span class="font-semibold text-indigo-700">${repo.language}</span></p>` : ''}
+                                <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer"
+                                   class="view-button block w-full text-center font-semibold py-2 px-4 rounded-md transition duration-200 ease-in-out mt-4">
+                                    Explore Project &rarr;
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    reposContainer.innerHTML += repoCard;
+                });
+
+            } catch (error) {
+                console.error('Error fetching repositories:', error);
+                loadingIndicator.style.display = 'none';
+                errorMessage.classList.remove('hidden');
+                errorMessage.querySelector('span').textContent = `Could not fetch repositories. ${error.message}. Please try again later.`;
+                reposContainer.innerHTML = '';
+            }
         }
+
+        document.addEventListener('DOMContentLoaded', fetchRepos);
     </script>
 </body>
-</html> 
+</html>
