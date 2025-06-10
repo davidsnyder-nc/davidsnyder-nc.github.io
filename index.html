@@ -11,7 +11,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #f0f4f8; /* A cool, light blue-gray */
             color: #1f2937; /* Tailwind gray-800 */
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            overflow-x: hidden; /* Prevent horizontal scroll on animations */
         }
         /* Custom scrollbar for a cleaner look */
         ::-webkit-scrollbar {
@@ -32,19 +32,11 @@
             color: #0f172a; /* Tailwind slate-900 */
             font-weight: 500;
         }
-        .content-fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
         /* Styles for the floating code snippets */
         .floating-snippet {
             position: absolute;
             font-family: 'Fira Code', monospace;
-            /* Adjusted opacity to be more visible */
             background-color: rgba(203, 213, 225, 0.15); 
             color: rgba(71, 85, 105, 0.2);
             padding: 1rem 2rem;
@@ -56,17 +48,42 @@
             white-space: pre;
             user-select: none;
             transform-origin: center center;
-            /* Animation and transition for dynamic updates */
             animation: floatAndFade 30s infinite ease-in-out alternate;
-            /* Added transform to the transition for smooth position changes */
             transition: opacity 1.5s ease-in-out, top 3s ease-in-out, left 3s ease-in-out, transform 3s ease-in-out;
         }
         
-        /* The floating and fading animation - adjusted opacity */
         @keyframes floatAndFade {
             0% { transform: translateY(15px) rotate(-1deg); opacity: 0.15; }
             100% { transform: translateY(-15px) rotate(1deg); opacity: 0.3; }
         }
+
+        /* --- New Animation Keyframes & Classes for content transitions --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideOutLeft {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-30px); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* Animation classes to be added/removed by JavaScript */
+        main.anim-out {
+            animation: slideOutLeft 0.3s ease-in forwards;
+        }
+        main.anim-in-fade {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        main.anim-in-slide {
+            animation: slideInRight 0.5s ease-out forwards;
+        }
+
     </style>
 </head>
 <body class="relative">
@@ -122,6 +139,7 @@
             { id: 'speak', title: 'Speak', description: 'Transform any text into natural, human-like speech. This application leverages modern, cloud-based speech synthesis APIs to provide high-quality audio generation. Ideal for creating voiceovers, listening to articles, or building accessibility features into your own applications.', github: 'https://github.com/davidsnyder-nc/speak', website: 'https://dsnyder.cloud/speak/', logo: 'https://dsnyder.cloud/images/speak.png' }
         ];
 
+        // --- DOM Elements ---
         const mainContent = document.getElementById('main-content');
         const navMenu = document.getElementById('nav-menu');
         const sideNav = document.getElementById('side-nav');
@@ -129,14 +147,20 @@
         const openIcon = document.getElementById('menu-open-icon');
         const closeIcon = document.getElementById('menu-close-icon');
 
+        // --- State Variables ---
+        let isAnimating = false;
+        let isInitialLoad = true;
         const snippets = [ '</>', '()=>', '{}', '<div>', '...', '//', '&&', '||', '===', '[]', '=>', '?.', '` `', '++' ];
         let snippetElements = [];
-        let snippetPositions = [];
 
+        /**
+         * Generates the HTML for a project page.
+         * @param {object} project - The project object.
+         * @returns {string} The HTML string for the project.
+         */
         function generateProjectHTML(project) {
-            // Unified layout places logo outside the card for proper transparency.
             return `
-                <div class="flex flex-col justify-center items-center w-full max-w-4xl mx-auto content-fade-in min-h-[calc(100vh-6rem)] text-center">
+                <div class="flex flex-col justify-center items-center w-full max-w-4xl mx-auto min-h-[calc(100vh-6rem)] text-center">
                     ${project.logo ? `<img src="${project.logo}" alt="${project.title} Logo" class="w-64 h-64 mb-8 object-contain" onerror="this.onerror=null; this.src='https://placehold.co/256x256/transparent/333?text=${project.title.charAt(0)}';">` : ''}
                     <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg w-full border border-white">
                         <h2 class="text-4xl font-bold mb-4 text-gray-900">${project.title}</h2>
@@ -150,36 +174,69 @@
             `;
         }
         
+        /**
+         * Loads content into the main area with animations.
+         * @param {string} projectId - The ID of the project to load.
+         */
         function loadContent(projectId) {
+            if (isAnimating) return; // Prevent animation overlap
             const project = projects.find(p => p.id === projectId);
             if (!project) return;
             
-            if (project.id === 'home') {
-                mainContent.innerHTML = `
-                <div class="flex items-center justify-center min-h-[calc(100vh-6rem)] w-full max-w-4xl mx-auto content-fade-in">
-                    ${project.description}
-                </div>
-                `;
-            } else {
-                mainContent.innerHTML = generateProjectHTML(project);
+            isAnimating = true;
+
+            // Start exit animation, unless it's the first page load
+            if (!isInitialLoad) {
+                mainContent.classList.add('anim-out');
             }
 
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.id === projectId) {
-                    item.classList.add('active');
+            // Wait for exit animation to finish before updating content
+            setTimeout(() => {
+                // Update the content
+                if (project.id === 'home') {
+                    mainContent.innerHTML = `<div class="flex items-center justify-center min-h-[calc(100vh-6rem)] w-full max-w-4xl mx-auto">${project.description}</div>`;
+                } else {
+                    mainContent.innerHTML = generateProjectHTML(project);
                 }
-            });
 
-            if (window.innerWidth < 1024) {
-                sideNav.classList.add('hidden');
-                openIcon.classList.remove('hidden');
-                closeIcon.classList.add('hidden');
-            }
+                // Remove old animation classes and add the new 'in' animation
+                mainContent.classList.remove('anim-out');
+                if (isInitialLoad) {
+                    mainContent.classList.add('anim-in-fade');
+                    isInitialLoad = false;
+                } else {
+                    mainContent.classList.add('anim-in-slide');
+                }
 
-            window.scrollTo(0, 0);
+                // Update navigation item styles
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.dataset.id === projectId) {
+                        item.classList.add('active');
+                    }
+                });
+
+                // Close mobile menu if open
+                if (window.innerWidth < 1024) {
+                    sideNav.classList.add('hidden');
+                    openIcon.classList.remove('hidden');
+                    closeIcon.classList.add('hidden');
+                }
+
+                window.scrollTo(0, 0);
+
+                // Clean up animation classes and reset state after 'in' animation finishes
+                setTimeout(() => {
+                    mainContent.classList.remove('anim-in-fade', 'anim-in-slide');
+                    isAnimating = false;
+                }, 500); // Must match the 'in' animation duration
+
+            }, isInitialLoad ? 0 : 300); // Must match the 'out' animation duration
         }
 
+        /**
+         * Creates and injects the navigation links into the DOM.
+         */
         function createNavLinks() {
             projects.forEach((proj, index) => {
                 const a = document.createElement('a');
@@ -191,6 +248,7 @@
                 a.onclick = (e) => { e.preventDefault(); loadContent(proj.id); };
                 navMenu.appendChild(a);
 
+                // Add a divider after the 'Home' link
                 if (index === 0) {
                     const divider = document.createElement('hr');
                     divider.className = 'my-2 border-gray-200/80';
@@ -199,6 +257,9 @@
             });
         }
 
+        /**
+         * Sets up the event listener for the mobile menu toggle.
+         */
         function initMobileMenu() {
             menuToggle.addEventListener('click', () => {
                 sideNav.classList.toggle('hidden');
@@ -206,15 +267,33 @@
                 closeIcon.classList.toggle('hidden');
             });
         }
+        
+        /**
+         * Preloads all project logo images to improve loading speed.
+         */
+        function preloadImages() {
+            projects.forEach(project => {
+                // Only preload if a logo URL exists
+                if (project.logo) {
+                    const img = new Image();
+                    img.src = project.logo;
+                }
+            });
+        }
 
+        /**
+         * Creates and animates the floating code snippets in the background.
+         */
         function initBackgroundSnippets() {
             const container = document.getElementById('background-snippets');
+            if (!container) return;
             const numSnippets = 8;
             const gridCols = 4;
             const gridRows = 2;
             const cellWidth = 100 / gridCols;
             const cellHeight = 100 / gridRows;
 
+            // Create a shuffled array of grid positions to avoid collisions
             let gridPositions = Array.from({ length: gridCols * gridRows }, (_, i) => i);
             for (let i = gridPositions.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -227,16 +306,12 @@
                 el.textContent = snippets[i % snippets.length];
 
                 const posIndex = gridPositions[i];
-                snippetPositions.push(posIndex);
-                
                 const col = posIndex % gridCols;
                 const row = Math.floor(posIndex / gridCols);
                 
                 el.style.left = `${col * cellWidth + (Math.random() * 5 - 2.5)}%`;
                 el.style.top = `${row * cellHeight + (Math.random() * 5 - 2.5)}%`;
-
-                const duration = Math.random() * 20 + 25;
-                el.style.animationDuration = `${duration}s`;
+                el.style.animationDuration = `${Math.random() * 20 + 25}s`;
                 
                 container.appendChild(el);
                 snippetElements.push(el);
@@ -245,11 +320,13 @@
             setInterval(updateRandomSnippet, 3500);
         }
 
+        /**
+         * Periodically updates a random background snippet for a dynamic effect.
+         */
         function updateRandomSnippet() {
              if (snippetElements.length === 0) return;
 
-            const snippetIndex = Math.floor(Math.random() * snippetElements.length);
-            const snippetToUpdate = snippetElements[snippetIndex];
+            const snippetToUpdate = snippetElements[Math.floor(Math.random() * snippetElements.length)];
             snippetToUpdate.style.opacity = '0';
 
             setTimeout(() => {
@@ -258,11 +335,13 @@
             }, 1500);
         }
 
+        // --- Initializer ---
         window.addEventListener('load', () => {
             createNavLinks();
             loadContent('home');
             initMobileMenu();
             initBackgroundSnippets();
+            preloadImages(); // Preload images after everything else is set up
         });
 
     </script>
