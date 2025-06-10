@@ -3,131 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Projects</title>
+    <title>dsnyder.cloud</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
-            color: #1f2937;
+            background-color: #f0f4f8; /* A cool, light blue-gray */
+            color: #1f2937; /* Tailwind gray-800 */
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
-        .repo-card {
-            background-color: white;
-            color: #1f2937;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        .repo-title a {
-            color: #4f46e5;
-            text-decoration: none;
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0; /* Tailwind slate-200 */
         }
-        .repo-title a:hover {
-            text-decoration: underline;
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8; /* Tailwind slate-400 */
+            border-radius: 10px;
         }
-        .repo-description {
-            font-size: 0.9rem;
-            color: #4b5563;
-            margin-bottom: 1rem;
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; /* Tailwind slate-500 */
         }
-        /* .repo-stats class is no longer used but kept for potential future use */
-        .repo-stats span {
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            font-size: 0.85rem;
-            color: #6b7280;
+        .nav-item.active {
+            background-color: #e2e8f0; /* Tailwind slate-200 */
+            color: #0f172a; /* Tailwind slate-900 */
+            font-weight: 500;
         }
-        .view-button {
-            background-color: #4f46e5;
-            color: white;
-            border: 1px solid transparent;
+        .content-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
         }
-        .view-button:hover {
-            background-color: #4338ca;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Styles for the floating code snippets */
+        .floating-snippet {
+            position: absolute;
+            font-family: 'Fira Code', monospace;
+            background-color: rgba(203, 213, 225, 0.2); /* slate-300 with low opacity */
+            color: rgba(71, 85, 105, 0.3); /* slate-600 with low opacity */
+            padding: 1rem 2rem;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(226, 232, 240, 0.3); /* slate-200 with low opacity */
+            font-size: 8rem;
+            line-height: 1;
+            font-weight: 500;
+            white-space: pre;
+            user-select: none;
+            transform-origin: center center;
+            /* Animation and transition for dynamic updates */
+            animation: floatAndFade 30s infinite ease-in-out alternate;
+            transition: opacity 1.5s ease-in-out, top 3s ease-in-out, left 3s ease-in-out;
+        }
+        /* The floating and fading animation - made more subtle */
+        @keyframes floatAndFade {
+            0% { transform: translateY(15px) rotate(-1deg); opacity: 0.2; }
+            100% { transform: translateY(-15px) rotate(1deg); opacity: 0.5; }
         }
     </style>
 </head>
-<body class="text-gray-800">
-    <div class="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
-        <header class="text-center mb-12">
-             <h1 class="text-3xl font-bold text-gray-900">GitHub Projects</h1>
-        </header>
+<body class="relative">
 
-        <div id="repos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            </div>
-
-        <div id="loading-indicator" class="text-center mt-10">
-            <p class="text-2xl text-gray-700">Fetching projects...</p>
-             <div class="mt-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
-                <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
-            </div>
-        </div>
-
-        <div id="error-message" class="hidden text-center mt-10 bg-red-100 border-l-4 border-red-500 text-red-700 p-6 rounded-md shadow-md" role="alert">
-            <strong class="font-bold text-lg">Oops! Something went wrong.</strong>
-            <span class="block sm:inline mt-1">Could not fetch repositories. Please check your connection or try again later.</span>
-        </div>
+    <!-- Container for floating code snippets in the background -->
+    <div id="background-snippets" class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <!-- Snippets will be injected here by JavaScript -->
     </div>
 
+    <!-- Mobile Menu Toggle Button -->
+    <button id="menu-toggle" class="lg:hidden fixed top-5 right-5 z-30 p-2 bg-white/80 backdrop-blur-md rounded-lg shadow-lg text-gray-800">
+        <svg id="menu-open-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        <svg id="menu-close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    </button>
+
+    <!-- Floating Right-side Navigation -->
+    <nav id="side-nav" class="hidden fixed top-0 right-0 bottom-0 w-72 bg-white/90 backdrop-blur-xl border-l border-gray-200/80 lg:flex flex-col p-6 lg:top-6 lg:bottom-6 lg:rounded-2xl lg:shadow-xl z-20">
+        <h2 class="text-xl font-bold mb-6 text-gray-800 text-right">Projects</h2>
+        <div id="nav-menu" class="space-y-2 text-right overflow-y-auto">
+            <!-- Project links will be injected here by JavaScript -->
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="p-6 sm:p-10 lg:p-12 lg:mr-[22rem]">
+        <!-- Content will be loaded here -->
+    </main>
+
     <script>
-        const username = 'davidsnyder-nc';
-        const reposToExclude = ['davidsnyder-nc.github.io', 'podcasts'];
-        const reposContainer = document.getElementById('repos-container');
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const errorMessage = document.getElementById('error-message');
+        // Projects are in alphabetical order, with Home first.
+        const projects = [
+            {
+                id: 'home',
+                title: 'Home',
+                description: `
+                    <div class="flex flex-col items-center justify-center text-center">
+                        <img src="https://dsnyder.cloud/images/glasses.png" alt="Logo" class="w-96 h-96 mb-8" onerror="this.src='https://placehold.co/384x384/transparent/333?text=DS'; this.onerror=null;">
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 flex items-center justify-center gap-x-3">
+                            <span class="text-gray-400 font-mono">&lt;/&gt;</span>
+                            <span>dsnyder.cloud</span>
+                        </h1>
+                        <p class="text-xl md:text-2xl text-gray-600 mt-2 mb-8">Innovating on the Web</p>
+                        <a href="#" onclick="event.preventDefault();" title="Contact form coming soon" class="bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg shadow-md cursor-not-allowed opacity-75">Contact Me</a>
+                    </div>
+                `
+            },
+            { id: 'briefnews', title: 'Brief News', description: "Stay informed without the noise. Brief News is an AI-powered news aggregator that fetches top stories from various sources, summarizes them into concise, easy-to-read snippets, and delivers the key information you need, fast. It's the perfect way to keep up with the world, minus the endless scrolling.", github: 'https://github.com/davidsnyder-nc/briefnews', website: 'https://dsnyder.cloud/briefnews/' },
+            { id: 'githubbackup', title: 'GitHub Backup', description: 'A powerful and straightforward Python script designed to give you peace of mind. It systematically backs up all of your GitHub repositories, including source code, issues, pull requests, and wikis. Automate your backups and ensure your valuable code is always secure and recoverable.', github: 'https://github.com/davidsnyder-nc/githubbackup', website: null },
+            { id: 'mediadashboard', title: 'MediaDashboard', description: 'Visualize your media world. This sleek, modern dashboard connects to your media servers to provide real-time statistics and activity monitoring. Track library growth, user watch history, and server performance through beautiful charts and an intuitive, clean interface.', github: 'https://github.com/davidsnyder-nc/mediadashboard', website: null },
+            { id: 'mediadock', title: 'MediaDock', description: 'The ultimate command center for your home media server. MediaDock provides a unified, user-friendly interface to manage and interact with a suite of media applications like Sonarr, Radarr, and Plex. Simplify your media management workflow with this all-in-one tool.', github: 'https://github.com/davidsnyder-nc/mediadock', website: null },
+            { id: 'mediainfo', title: 'MediaInfo', description: 'A lightweight and efficient command-line utility for media file analysis. Quickly retrieve and display detailed metadata and technical information for any video or audio file. It is an essential tool for developers and media enthusiasts who need to inspect file properties programmatically.', github: 'https://github.com/davidsnyder-nc/mediainfo', website: null },
+            { id: 'podgen', title: 'PodGen', description: 'Unleash your creativity with the power of AI. PodGen is a revolutionary tool that generates full-length, high-quality podcast episodes from a single prompt. It creates engaging conversations with multiple AI speakers, researches topics, and produces a complete audio file, turning your ideas into a podcast in minutes.', github: 'https://github.com/davidsnyder-nc/aipodcast', website: 'https://dsnyder.cloud/podgen/' },
+            { id: 'roostr', title: 'Roostr', description: "Take Your Media Into Your Own Hands. Roostr helps you curate your favorite photos and videos into a unique, seamless experience. It’s the intimate media viewer you've been waiting for.", logo: 'https://dsnyder.cloud/roostr/logo.png', github: null, website: 'https://dsnyder.cloud/roostr/' },
+            { id: 'speak', title: 'Speak', description: 'Transform any text into natural, human-like speech. This application leverages modern, cloud-based speech synthesis APIs to provide high-quality audio generation. Ideal for creating voiceovers, listening to articles, or building accessibility features into your own applications.', github: 'https://github.com/davidsnyder-nc/speak', website: 'https://dsnyder.cloud/speak/' }
+        ];
 
-        async function fetchRepos() {
-            try {
-                const response = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&direction=desc`);
-                if (!response.ok) {
-                    throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
-                }
-                let repos = await response.json();
+        const mainContent = document.getElementById('main-content');
+        const navMenu = document.getElementById('nav-menu');
+        const sideNav = document.getElementById('side-nav');
+        const menuToggle = document.getElementById('menu-toggle');
+        const openIcon = document.getElementById('menu-open-icon');
+        const closeIcon = document.getElementById('menu-close-icon');
 
-                repos = repos.filter(repo => !reposToExclude.includes(repo.name));
+        const snippets = [
+            '</>', '()=>', '{}', '<div>', '...', '//', '&&', '||', '===', '[]', '=>', '?.', '` `', '++'
+        ];
+        let snippetElements = [];
 
-                loadingIndicator.style.display = 'none';
-
-                if (repos.length === 0) {
-                    reposContainer.innerHTML = '<p class="text-center text-gray-600 col-span-full text-lg">No public repositories to display at the moment.</p>';
-                    return;
-                }
-
-                reposContainer.innerHTML = '';
-
-                repos.forEach(repo => {
-                    const repoCard = `
-                        <div class="repo-card p-6 flex flex-col justify-between">
-                            <div>
-                                <h2 class="repo-title text-xl font-semibold mb-2">
-                                    <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${repo.name}</a>
-                                </h2>
-                                <p class="repo-description mb-3">${repo.description || 'No description provided. Explore the project to learn more!'}</p>
-                            </div>
-                            <div>
-                                ${repo.language ? `<p class="mb-3 text-sm text-gray-500">Language: <span class="font-semibold text-indigo-700">${repo.language}</span></p>` : ''}
-                                <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer"
-                                   class="view-button block w-full text-center font-semibold py-2 px-4 rounded-md transition duration-200 ease-in-out mt-4">
-                                    Explore Project &rarr;
-                                </a>
-                            </div>
+        function generateProjectHTML(project) {
+            return `
+                <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg w-full max-w-4xl mx-auto content-fade-in min-h-[calc(100vh-6rem)] flex flex-col justify-center border border-white">
+                    <div>
+                        ${project.logo ? `<img src="${project.logo}" alt="${project.title} Logo" class="w-20 h-20 mb-6 rounded-lg object-contain" onerror="this.style.display='none'">` : ''}
+                        <h2 class="text-4xl font-bold mb-4 text-gray-900">${project.title}</h2>
+                        <p class="text-lg text-gray-600 mb-8">${project.description}</p>
+                        <div class="flex flex-wrap gap-4">
+                            ${project.website ? `<a href="${project.website}" target="_blank" rel="noopener noreferrer" class="inline-block bg-green-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300">View Website</a>` : ''}
+                            ${project.github ? `<a href="${project.github}" target="_blank" rel="noopener noreferrer" class="inline-block bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-gray-900 transition-colors duration-300">View on GitHub</a>` : ''}
                         </div>
-                    `;
-                    reposContainer.innerHTML += repoCard;
-                });
-
-            } catch (error) {
-                console.error('Error fetching repositories:', error);
-                loadingIndicator.style.display = 'none';
-                errorMessage.classList.remove('hidden');
-                errorMessage.querySelector('span').textContent = `Could not fetch repositories. ${error.message}. Please try again later.`;
-                reposContainer.innerHTML = '';
+                    </div>
+                </div>
+            `;
+        }
+        
+        function loadContent(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+            
+            if (project.id === 'home') {
+                // For the homepage, inject the content directly without a card wrapper.
+                mainContent.innerHTML = `
+                <div class="flex items-center justify-center min-h-[calc(100vh-6rem)] w-full max-w-4xl mx-auto content-fade-in">
+                    ${project.description}
+                </div>
+                `;
+            } else {
+                // For other projects, use the card generator.
+                mainContent.innerHTML = generateProjectHTML(project);
             }
+
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.id === projectId) {
+                    item.classList.add('active');
+                }
+            });
+
+            if (window.innerWidth < 1024) {
+                sideNav.classList.add('hidden');
+                openIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+            }
+
+            window.scrollTo(0, 0);
         }
 
-        document.addEventListener('DOMContentLoaded', fetchRepos);
+        function createNavLinks() {
+            projects.forEach((proj, index) => {
+                const a = document.createElement('a');
+                a.href = '#';
+                a.textContent = proj.title;
+                a.dataset.id = proj.id;
+                a.className = 'nav-item block text-gray-600 hover:text-gray-900 py-2 px-4 rounded-lg transition-colors duration-200';
+                if (index === 0) {
+                    a.classList.add('active');
+                }
+                a.onclick = (e) => { e.preventDefault(); loadContent(proj.id); };
+                navMenu.appendChild(a);
+
+                if (index === 0) {
+                    const divider = document.createElement('hr');
+                    divider.className = 'my-2 border-gray-200/80';
+                    navMenu.appendChild(divider);
+                }
+            });
+        }
+
+        function initMobileMenu() {
+            menuToggle.addEventListener('click', () => {
+                sideNav.classList.toggle('hidden');
+                openIcon.classList.toggle('hidden');
+                closeIcon.classList.toggle('hidden');
+            });
+        }
+
+        function initBackgroundSnippets() {
+            const snippetContainer = document.getElementById('background-snippets');
+            
+            for (let i = 0; i < 8; i++) {
+                const snippetEl = document.createElement('div');
+                snippetEl.className = 'floating-snippet';
+                snippetEl.textContent = snippets[Math.floor(Math.random() * snippets.length)];
+
+                const top = Math.random() * 90;
+                const left = Math.random() * 90;
+                const duration = Math.random() * 20 + 25;
+                
+                snippetEl.style.top = `${top}%`;
+                snippetEl.style.left = `${left}%`;
+                snippetEl.style.animationDuration = `${duration}s`;
+                snippetEl.style.transform = `scale(${Math.random() * 0.5 + 0.75})`
+                
+                snippetContainer.appendChild(snippetEl);
+                snippetElements.push(snippetEl);
+            }
+
+            setInterval(updateRandomSnippet, 3500);
+        }
+
+        function updateRandomSnippet() {
+            if (snippetElements.length === 0) return;
+
+            const snippetToUpdate = snippetElements[Math.floor(Math.random() * snippetElements.length)];
+            
+            snippetToUpdate.style.opacity = '0';
+
+            setTimeout(() => {
+                snippetToUpdate.textContent = snippets[Math.floor(Math.random() * snippets.length)];
+                snippetToUpdate.style.top = `${Math.random() * 90}%`;
+                snippetToUpdate.style.left = `${Math.random() * 90}%`;
+                snippetToUpdate.style.opacity = '1';
+            }, 1500);
+        }
+
+        window.addEventListener('load', () => {
+            createNavLinks();
+            loadContent('home');
+            initMobileMenu();
+            initBackgroundSnippets();
+        });
+
     </script>
 </body>
 </html>
