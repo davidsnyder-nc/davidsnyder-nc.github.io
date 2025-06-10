@@ -112,14 +112,14 @@
                     </div>
                 `
             },
-            { id: 'briefnews', title: 'Brief News', description: "Stay informed without the noise. Brief News is an AI-powered news aggregator that fetches top stories from various sources, summarizes them into concise, easy-to-read snippets, and delivers the key information you need, fast. It's the perfect way to keep up with the world, minus the endless scrolling.", github: 'https://github.com/davidsnyder-nc/briefnews', website: 'https://dsnyder.cloud/briefnews/' },
-            { id: 'githubbackup', title: 'GitHub Backup', description: 'A powerful and straightforward Python script designed to give you peace of mind. It systematically backs up all of your GitHub repositories, including source code, issues, pull requests, and wikis. Automate your backups and ensure your valuable code is always secure and recoverable.', github: 'https://github.com/davidsnyder-nc/githubbackup', website: null },
-            { id: 'mediadashboard', title: 'MediaDashboard', description: 'Visualize your media world. This sleek, modern dashboard connects to your media servers to provide real-time statistics and activity monitoring. Track library growth, user watch history, and server performance through beautiful charts and an intuitive, clean interface.', github: 'https://github.com/davidsnyder-nc/mediadashboard', website: null },
-            { id: 'mediadock', title: 'MediaDock', description: 'The ultimate command center for your home media server. MediaDock provides a unified, user-friendly interface to manage and interact with a suite of media applications like Sonarr, Radarr, and Plex. Simplify your media management workflow with this all-in-one tool.', github: 'https://github.com/davidsnyder-nc/mediadock', website: null },
-            { id: 'mediainfo', title: 'MediaInfo', description: 'A lightweight and efficient command-line utility for media file analysis. Quickly retrieve and display detailed information and metadata for any video or audio file. It is an essential tool for developers and media enthusiasts who need to inspect file properties programmatically.', github: 'https://github.com/davidsnyder-nc/mediainfo', website: null },
-            { id: 'podgen', title: 'PodGen', description: 'Unleash your creativity with the power of AI. PodGen is a revolutionary tool that generates full-length, high-quality podcast episodes from a single prompt. It creates engaging conversations with multiple AI speakers, researches topics, and produces a complete audio file, turning your ideas into a podcast in minutes.', github: 'https://github.com/davidsnyder-nc/aipodcast', website: 'https://dsnyder.cloud/podgen/' },
+            { id: 'briefnews', title: 'Brief News', description: "Stay informed without the noise. Brief News is an AI-powered news aggregator that fetches top stories from various sources, summarizes them into concise, easy-to-read snippets, and delivers the key information you need, fast. It's the perfect way to keep up with the world, minus the endless scrolling.", github: 'https://github.com/davidsnyder-nc/briefnews', website: 'https://dsnyder.cloud/briefnews/', logo: 'https://dsnyder.cloud/images/briefnews.png' },
+            { id: 'githubbackup', title: 'GitHub Backup', description: 'A powerful and straightforward Python script designed to give you peace of mind. It systematically backs up all of your GitHub repositories, including source code, issues, pull requests, and wikis. Automate your backups and ensure your valuable code is always secure and recoverable.', github: 'https://github.com/davidsnyder-nc/githubbackup', website: null, logo: 'https://dsnyder.cloud/images/githubbackup.png' },
+            { id: 'mediadashboard', title: 'MediaDashboard', description: 'Visualize your media world. This sleek, modern dashboard connects to your media servers to provide real-time statistics and activity monitoring. Track library growth, user watch history, and server performance through beautiful charts and an intuitive, clean interface.', github: 'https://github.com/davidsnyder-nc/mediadashboard', website: null, logo: 'https://dsnyder.cloud/images/mediadashboard.png' },
+            { id: 'mediadock', title: 'MediaDock', description: 'The ultimate command center for your home media server. MediaDock provides a unified, user-friendly interface to manage and interact with a suite of media applications like Sonarr, Radarr, and Plex. Simplify your media management workflow with this all-in-one tool.', github: 'https://github.com/davidsnyder-nc/mediadock', website: null, logo: 'https://dsnyder.cloud/images/mediadock.png' },
+            { id: 'mediainfo', title: 'MediaInfo', description: 'A lightweight and efficient command-line utility for media file analysis. Quickly retrieve and display detailed metadata and technical information for any video or audio file. It is an essential tool for developers and media enthusiasts who need to inspect file properties programmatically.', github: 'https://github.com/davidsnyder-nc/mediainfo', website: null, logo: 'https://dsnyder.cloud/images/mediainfo.png' },
+            { id: 'podgen', title: 'PodGen', description: 'Unleash your creativity with the power of AI. PodGen is a revolutionary tool that generates full-length, high-quality podcast episodes from a single prompt. It creates engaging conversations with multiple AI speakers, researches topics, and produces a complete audio file, turning your ideas into a podcast in minutes.', github: 'https://github.com/davidsnyder-nc/aipodcast', website: 'https://dsnyder.cloud/podgen/', logo: 'https://dsnyder.cloud/images/podgen.png' },
             { id: 'roostr', title: 'Roostr', description: "Take Your Media Into Your Own Hands. Roostr helps you curate your favorite photos and videos into a unique, seamless experience. It’s the intimate media viewer you've been waiting for.", logo: 'https://dsnyder.cloud/roostr/logo.png', github: null, website: 'https://dsnyder.cloud/roostr/' },
-            { id: 'speak', title: 'Speak', description: 'Transform any text into natural, human-like speech. This application leverages modern, cloud-based speech synthesis APIs to provide high-quality audio generation. Ideal for creating voiceovers, listening to articles, or building accessibility features into your own applications.', github: 'https://github.com/davidsnyder-nc/speak', website: 'https://dsnyder.cloud/speak/' }
+            { id: 'speak', title: 'Speak', description: 'Transform any text into natural, human-like speech. This application leverages modern, cloud-based speech synthesis APIs to provide high-quality audio generation. Ideal for creating voiceovers, listening to articles, or building accessibility features into your own applications.', github: 'https://github.com/davidsnyder-nc/speak', website: 'https://dsnyder.cloud/speak/', logo: 'https://dsnyder.cloud/images/speak.png' }
         ];
 
         const mainContent = document.getElementById('main-content');
@@ -131,17 +131,17 @@
 
         const snippets = [ '</>', '()=>', '{}', '<div>', '...', '//', '&&', '||', '===', '[]', '=>', '?.', '` `', '++' ];
         let snippetElements = [];
-        // --- NEW: Grid system to prevent overlap ---
-        let snippetPositions = []; // This will hold the grid index for each snippet element
+        let snippetPositions = [];
 
         function generateProjectHTML(project) {
+            // Unified layout places logo outside the card for proper transparency.
             return `
-                <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg w-full max-w-4xl mx-auto content-fade-in min-h-[calc(100vh-6rem)] flex flex-col justify-center border border-white">
-                    <div>
-                        ${project.logo ? `<img src="${project.logo}" alt="${project.title} Logo" class="w-20 h-20 mb-6 rounded-lg object-contain" onerror="this.style.display='none'">` : ''}
+                <div class="flex flex-col justify-center items-center w-full max-w-4xl mx-auto content-fade-in min-h-[calc(100vh-6rem)] text-center">
+                    ${project.logo ? `<img src="${project.logo}" alt="${project.title} Logo" class="w-64 h-64 mb-8 object-contain" onerror="this.onerror=null; this.src='https://placehold.co/256x256/transparent/333?text=${project.title.charAt(0)}';">` : ''}
+                    <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg w-full border border-white">
                         <h2 class="text-4xl font-bold mb-4 text-gray-900">${project.title}</h2>
-                        <p class="text-lg text-gray-600 mb-8">${project.description}</p>
-                        <div class="flex flex-wrap gap-4">
+                        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">${project.description}</p>
+                        <div class="flex flex-wrap gap-4 justify-center">
                             ${project.website ? `<a href="${project.website}" target="_blank" rel="noopener noreferrer" class="inline-block bg-green-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-600 transition-colors duration-300">View Website</a>` : ''}
                             ${project.github ? `<a href="${project.github}" target="_blank" rel="noopener noreferrer" class="inline-block bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-gray-900 transition-colors duration-300">View on GitHub</a>` : ''}
                         </div>
@@ -207,7 +207,6 @@
             });
         }
 
-        // --- UPDATED: Snippet placement logic ---
         function initBackgroundSnippets() {
             const container = document.getElementById('background-snippets');
             const numSnippets = 8;
@@ -216,7 +215,6 @@
             const cellWidth = 100 / gridCols;
             const cellHeight = 100 / gridRows;
 
-            // Create a shuffled array of grid positions
             let gridPositions = Array.from({ length: gridCols * gridRows }, (_, i) => i);
             for (let i = gridPositions.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -229,13 +227,12 @@
                 el.textContent = snippets[i % snippets.length];
 
                 const posIndex = gridPositions[i];
-                snippetPositions.push(posIndex); // Store initial grid index
+                snippetPositions.push(posIndex);
                 
                 const col = posIndex % gridCols;
                 const row = Math.floor(posIndex / gridCols);
                 
-                // Position the element within its grid cell
-                el.style.left = `${col * cellWidth + (Math.random() * 5 - 2.5)}%`; // Add small random offset
+                el.style.left = `${col * cellWidth + (Math.random() * 5 - 2.5)}%`;
                 el.style.top = `${row * cellHeight + (Math.random() * 5 - 2.5)}%`;
 
                 const duration = Math.random() * 20 + 25;
@@ -251,19 +248,14 @@
         function updateRandomSnippet() {
              if (snippetElements.length === 0) return;
 
-            // Fade out a random snippet
             const snippetIndex = Math.floor(Math.random() * snippetElements.length);
             const snippetToUpdate = snippetElements[snippetIndex];
             snippetToUpdate.style.opacity = '0';
 
-            // After fade out, update content and move it, then fade back in
             setTimeout(() => {
-                // Change content
                 snippetToUpdate.textContent = snippets[Math.floor(Math.random() * snippets.length)];
-                
-                // Fade back in
                 snippetToUpdate.style.opacity = '1';
-            }, 1500); // Must match the CSS transition duration
+            }, 1500);
         }
 
         window.addEventListener('load', () => {
