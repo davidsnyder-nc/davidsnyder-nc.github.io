@@ -3,374 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dsnyder.cloud</title>
+    <title>David Snyder's GitHub Repositories</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8; /* A cool, light blue-gray */
-            color: #1f2937; /* Tailwind gray-800 */
-            overflow-x: hidden; /* Prevent horizontal scroll on animations */
+            overflow-x: hidden; /* Prevent horizontal scrollbar from animation */
         }
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .repo-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            z-index: 10;
         }
-        ::-webkit-scrollbar-track {
-            background: #e2e8f0; /* Tailwind slate-200 */
+        .repo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-        ::-webkit-scrollbar-thumb {
-            background: #94a3b8; /* Tailwind slate-400 */
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #64748b; /* Tailwind slate-500 */
-        }
-        .nav-item.active {
-            background-color: #e2e8f0; /* Tailwind slate-200 */
-            color: #0f172a; /* Tailwind slate-900 */
-            font-weight: 500;
+        #background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Place it behind the content */
         }
 
-        /* Styles for the floating code snippets */
-        .floating-snippet {
+        .circle {
             position: absolute;
-            font-family: 'Fira Code', monospace;
-            background-color: rgba(203, 213, 225, 0.15); 
-            color: rgba(71, 85, 105, 0.2);
-            padding: 1rem 2rem;
-            border-radius: 1.5rem;
-            border: 1px solid rgba(226, 232, 240, 0.2);
-            font-size: 8rem;
-            line-height: 1;
-            font-weight: 500;
-            white-space: pre;
-            user-select: none;
-            transform-origin: center center;
-            animation: floatAndFade 30s infinite ease-in-out alternate;
-            /* We now add a transition for the mouse-move parallax effect */
-            transition: opacity 1.5s ease-in-out, top 3s ease-in-out, left 3s ease-in-out, transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        
-        @keyframes floatAndFade {
-            0% { transform: translateY(15px) rotate(-1deg); }
-            100% { transform: translateY(-15px) rotate(1deg); }
+            border-radius: 50%;
+            opacity: 0.1; /* Very transparent */
+            animation: move 40s linear infinite;
         }
 
-        /* --- Page Content Animation Keyframes & Classes --- */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideOutLeft { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-30px); } }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-        
-        main.anim-out { animation: slideOutLeft 0.3s ease-in forwards; }
-        main.anim-in-fade { animation: fadeIn 0.5s ease-out forwards; }
-        main.anim-in-slide { animation: slideInRight 0.5s ease-out forwards; }
-
-        /* --- Scroll-triggered animation classes --- */
-        .anim-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        @keyframes move {
+            0% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(calc(var(--x-end) * 1px), calc(var(--y-end) * 1px));
+            }
+            100% {
+                transform: translate(0, 0);
+            }
         }
-        .anim-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- Hover effect for nav item icons --- */
-        .nav-item svg {
-            transition: transform 0.25s ease-in-out;
-        }
-        .nav-item:hover svg {
-            transform: rotate(8deg) scale(1.1);
-        }
-
     </style>
 </head>
-<body class="relative">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
 
-    <!-- Container for floating code snippets in the background -->
-    <div id="background-snippets" class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
-      <!-- Snippets will be injected here by JavaScript -->
+    <div id="background-animation"></div>
+
+    <div class="container mx-auto px-4 py-8 md:py-12 relative z-10">
+
+        <header class="text-center mb-8 md:mb-12">
+            <img id="avatar" src="https://placehold.co/128x128/e2e8f0/e2e8f0" class="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto mb-4 border-4 border-white dark:border-gray-700 shadow-lg" alt="GitHub Avatar">
+            <h1 id="name" class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Fetching Profile...</h1>
+            <p id="bio" class="mt-2 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"></p>
+            <div class="mt-4 flex flex-col items-center space-y-1">
+                <a href="https://github.com/davidsnyder-nc" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">@davidsnyder-nc</a>
+                <a href="https://dsnyder.cloud" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">dsnyder.cloud</a>
+            </div>
+        </header>
+
+        <main>
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">My Repositories</h2>
+            <div id="repos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Loading Skeleton -->
+                <div class="skeleton bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                    <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                    <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mt-4"></div>
+                </div>
+                <div class="skeleton bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hidden md:block">
+                    <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                     <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mt-4"></div>
+                </div>
+                <div class="skeleton bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hidden lg:block">
+                    <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                     <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mt-4"></div>
+                </div>
+            </div>
+            <div id="error-message" class="hidden text-center text-red-500 mt-8"></div>
+        </main>
+
+        <footer class="text-center mt-12 py-6 border-t border-gray-200 dark:border-gray-700">
+            <p class="text-gray-500 dark:text-gray-400">Powered by the GitHub API</p>
+        </footer>
+
     </div>
 
-    <!-- Mobile Menu Toggle Button -->
-    <button id="menu-toggle" class="lg:hidden fixed top-5 right-5 z-30 p-2 bg-white/80 backdrop-blur-md rounded-lg shadow-lg text-gray-800">
-        <svg id="menu-open-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-        <svg id="menu-close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-    </button>
-
-    <!-- Floating Right-side Navigation -->
-    <nav id="side-nav" class="hidden fixed top-0 right-0 bottom-0 w-72 bg-white/90 backdrop-blur-xl border-l border-gray-200/80 lg:flex flex-col p-6 lg:top-6 lg:bottom-6 lg:rounded-2xl lg:shadow-xl z-20">
-        <h2 class="text-xl font-bold mb-6 text-gray-800 text-right anim-on-scroll">Projects</h2>
-        <div id="nav-menu" class="space-y-2 text-right overflow-y-auto">
-            <!-- Project links will be injected here by JavaScript -->
-        </div>
-    </nav>
-
-    <!-- Main Content Area -->
-    <main id="main-content" class="p-6 sm:p-10 lg:p-12 lg:mr-[22rem]">
-        <!-- Content will be loaded here -->
-    </main>
-
     <script>
-        const projects = [
-            {
-                id: 'home',
-                title: 'Home',
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>',
-                description: `
-                    <div class="flex flex-col items-center justify-center text-center">
-                        <img src="https://dsnyder.cloud/images/glasses.png" alt="Logo" class="w-full max-w-[200px] md:max-w-[300px] h-auto object-contain mb-8 anim-on-scroll" style="transition-delay: 100ms;" onerror="this.src='https://placehold.co/384x384/transparent/333?text=DS'; this.onerror=null;">
-                        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 flex items-center justify-center gap-x-3 anim-on-scroll" style="transition-delay: 200ms;">
-                            <span class="text-gray-400 font-mono">&lt;/&gt;</span>
-                            <span>dsnyder.cloud</span>
-                        </h1>
-                        <p class="text-xl md:text-2xl text-gray-600 mt-2 mb-8 anim-on-scroll" style="transition-delay: 300ms;">Innovating on the Web</p>
-                        <a href="#" onclick="event.preventDefault();" title="Contact form coming soon" class="bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg shadow-md cursor-not-allowed opacity-75 transform hover:-translate-y-1 transition-all duration-300 anim-on-scroll" style="transition-delay: 400ms;">Contact Me</a>
-                    </div>
-                `
-            },
-            { id: 'briefnews', title: 'Brief News', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" /><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" /></svg>', description: "Stay informed without the noise. Brief News is an AI-powered news aggregator that fetches top stories from various sources, summarizes them into concise, easy-to-read snippets, and delivers the key information you need, fast. It's the perfect way to keep up with the world, minus the endless scrolling.", github: 'https://github.com/davidsnyder-nc/briefnews', website: 'https://dsnyder.cloud/briefnews/', logo: 'https://dsnyder.cloud/images/briefnews.png' },
-            { id: 'githubbackup', title: 'GitHub Backup', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>', description: 'A powerful and straightforward Python script designed to give you peace of mind. It systematically backs up all of your GitHub repositories, including source code, issues, pull requests, and wikis. Automate your backups and ensure your valuable code is always secure and recoverable.', github: 'https://github.com/davidsnyder-nc/githubbackup', website: null, logo: 'https://dsnyder.cloud/images/githubbackup.png' },
-            { id: 'mediadashboard', title: 'MediaDashboard', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" /><path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" /></svg>', description: 'Visualize your media world. This sleek, modern dashboard connects to your media servers to provide real-time statistics and activity monitoring. Track library growth, user watch history, and server performance through beautiful charts and an intuitive, clean interface.', github: 'https://github.com/davidsnyder-nc/mediadashboard', website: null, logo: 'https://dsnyder.cloud/images/mediadashboard.png' },
-            { id: 'mediadock', title: 'MediaDock', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>', description: 'The ultimate command center for your home media server. MediaDock provides a unified, user-friendly interface to manage and interact with a suite of media applications like Sonarr, Radarr, and Plex. Simplify your media management workflow with this all-in-one tool.', github: 'https://github.com/davidsnyder-nc/mediadock', website: null, logo: 'https://dsnyder.cloud/images/mediadock.png' },
-            { id: 'mediainfo', title: 'MediaInfo', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>', description: 'A lightweight and efficient command-line utility for media file analysis. Quickly retrieve and display detailed metadata and technical information for any video or audio file. It is an essential tool for developers and media enthusiasts who need to inspect file properties programmatically.', github: 'https://github.com/davidsnyder-nc/mediainfo', website: null, logo: 'https://dsnyder.cloud/images/mediainfo.png' },
-            { id: 'podgen', title: 'PodGen', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4a3 3 0 016 0v6a3 3 0 11-6 0V4z" /><path d="M5.5 8.5A2.5 2.5 0 003 11v.5a6.5 6.5 0 0014 0V11a2.5 2.5 0 00-2.5-2.5h-1a.5.5 0 000 1h1a1.5 1.5 0 011.5 1.5v.5a5.5 5.5 0 01-11 0v-.5A1.5 1.5 0 015.5 10h1a.5.5 0 000-1h-1z" /></svg>', description: 'Unleash your creativity with the power of AI. PodGen is a revolutionary tool that generates full-length, high-quality podcast episodes from a single prompt. It creates engaging conversations with multiple AI speakers, researches topics, and produces a complete audio file, turning your ideas into a podcast in minutes.', github: 'https://github.com/davidsnyder-nc/aipodcast', website: 'https://dsnyder.cloud/podgen/', logo: 'https://dsnyder.cloud/images/podgen.png' },
-            { id: 'roostr', title: 'Roostr', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" /></svg>', description: "Take Your Media Into Your Own Hands. Roostr helps you curate your favorite photos and videos into a unique, seamless experience. It’s the intimate media viewer you've been waiting for.", logo: 'https://dsnyder.cloud/roostr/logo.png', github: null, website: 'https://dsnyder.cloud/roostr/' },
-            { id: 'speak', title: 'Speak', icon: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" /></svg>', description: 'Transform any text into natural, human-like speech. This application leverages modern, cloud-based speech synthesis APIs to provide high-quality audio generation. Ideal for creating voiceovers, listening to articles, or building accessibility features into your own applications.', github: 'https://github.com/davidsnyder-nc/speak', website: 'https://dsnyder.cloud/speak/', logo: 'https://dsnyder.cloud/images/speak.png' }
-        ];
-
-        // --- DOM Elements ---
-        const mainContent = document.getElementById('main-content');
-        const navMenu = document.getElementById('nav-menu');
-        const sideNav = document.getElementById('side-nav');
-        const menuToggle = document.getElementById('menu-toggle');
-        const openIcon = document.getElementById('menu-open-icon');
-        const closeIcon = document.getElementById('menu-close-icon');
-
-        // --- State Variables ---
-        let isAnimating = false;
-        let isInitialLoad = true;
-        const snippets = [ '</>', '()=>', '{}', '<div>', '...', '//', '&&', '||', '===', '[]', '=>', '?.', '` `', '++' ];
-        let snippetElements = [];
-        let scrollObserver;
-
-        /**
-         * Generates the HTML for a project page.
-         */
-        function generateProjectHTML(project) {
-            // Added .anim-on-scroll classes for scroll-triggered animations
-            // Added enhanced Tailwind hover classes to buttons
-            return `
-                <div class="flex flex-col justify-center items-center w-full max-w-4xl mx-auto min-h-[calc(100vh-6rem)] text-center">
-                    <div class="anim-on-scroll">
-                        ${project.logo ? `<img src="${project.logo}" alt="${project.title} Logo" class="w-64 h-64 mb-8 object-contain" onerror="this.onerror=null; this.src='https://placehold.co/256x256/transparent/333?text=${project.title.charAt(0)}';">` : ''}
-                    </div>
-                    <div class="bg-white/80 backdrop-blur-sm p-8 rounded-2xl shadow-lg w-full border border-white anim-on-scroll" style="transition-delay: 100ms;">
-                        <h2 class="text-4xl font-bold mb-4 text-gray-900">${project.title}</h2>
-                        <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">${project.description}</p>
-                        <div class="flex flex-wrap gap-4 justify-center">
-                            ${project.website ? `<a href="${project.website}" target="_blank" rel="noopener noreferrer" class="inline-block bg-green-500 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-600 transform hover:-translate-y-1 transition-all duration-300">View Website</a>` : ''}
-                            ${project.github ? `<a href="${project.github}" target="_blank" rel="noopener noreferrer" class="inline-block bg-gray-800 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-gray-900 transform hover:-translate-y-1 transition-all duration-300">View on GitHub</a>` : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        /**
-         * Loads content into the main area with animations.
-         */
-        function loadContent(projectId) {
-            if (isAnimating) return;
-            const project = projects.find(p => p.id === projectId);
-            if (!project) return;
+        document.addEventListener('DOMContentLoaded', () => {
+            const username = 'davidsnyder-nc';
+            const reposContainer = document.getElementById('repos-container');
+            const errorMessage = document.getElementById('error-message');
+            const avatarEl = document.getElementById('avatar');
+            const nameEl = document.getElementById('name');
+            const bioEl = document.getElementById('bio');
+            const background = document.getElementById('background-animation');
             
-            isAnimating = true;
+            // --- Background Animation Script ---
+            const colors = ['#BFDBFE', '#93C5FD', '#60A5FA', '#3B82F6']; // Light blue shades
+            const numCircles = 15;
 
-            if (!isInitialLoad) {
-                mainContent.classList.add('anim-out');
-            }
-
-            setTimeout(() => {
-                if (project.id === 'home') {
-                    mainContent.innerHTML = `<div class="flex items-center justify-center min-h-[calc(100vh-6rem)] w-full max-w-4xl mx-auto">${project.description}</div>`;
-                } else {
-                    mainContent.innerHTML = generateProjectHTML(project);
-                }
+            for (let i = 0; i < numCircles; i++) {
+                const circle = document.createElement('div');
+                circle.classList.add('circle');
                 
-                // Set up scroll animations for the newly loaded content
-                initScrollObserver();
+                const size = Math.random() * 200 + 100; // size between 100px and 300px
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                
+                circle.style.width = `${size}px`;
+                circle.style.height = `${size}px`;
+                circle.style.left = `${x}px`;
+                circle.style.top = `${y}px`;
+                circle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // For varied movement
+                const animationDuration = Math.random() * 30 + 20; // duration between 20s and 50s
+                circle.style.animationDuration = `${animationDuration}s`;
+                circle.style.animationDelay = `${Math.random() * -animationDuration}s`; // Start at random points
+                
+                // Set custom properties for CSS animation
+                circle.style.setProperty('--x-end', Math.random() * 200 - 100);
+                circle.style.setProperty('--y-end', Math.random() * 200 - 100);
 
-                mainContent.classList.remove('anim-out');
-                if (isInitialLoad) {
-                    mainContent.classList.add('anim-in-fade');
-                    isInitialLoad = false;
-                } else {
-                    mainContent.classList.add('anim-in-slide');
-                }
+                background.appendChild(circle);
+            }
+            // --- End Background Animation Script ---
 
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('active');
-                    if (item.dataset.id === projectId) {
-                        item.classList.add('active');
+            async function fetchGitHubData() {
+                try {
+                    // Fetch user profile
+                    const userResponse = await fetch(`https://api.github.com/users/${username}`);
+                    if (!userResponse.ok) {
+                        throw new Error(`User not found. Status: ${userResponse.status}`);
                     }
-                });
+                    const userData = await userResponse.json();
+                    
+                    // Update header with user data
+                    avatarEl.src = userData.avatar_url;
+                    avatarEl.onerror = () => avatarEl.src = 'https://placehold.co/128x128/e2e8f0/e2e8f0?text=Avatar';
+                    nameEl.textContent = userData.name || userData.login;
+                    bioEl.textContent = userData.bio || 'No bio available.';
 
-                if (window.innerWidth < 1024) {
-                    sideNav.classList.add('hidden');
-                    openIcon.classList.remove('hidden');
-                    closeIcon.classList.add('hidden');
-                }
+                    // Fetch repositories
+                    const repoResponse = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&direction=desc`);
+                    if (!repoResponse.ok) {
+                        throw new Error(`Could not fetch repositories. Status: ${repoResponse.status}`);
+                    }
+                    let repos = await repoResponse.json();
 
-                window.scrollTo(0, 0);
+                    // Filter out the specified repository
+                    repos = repos.filter(repo => repo.name !== 'davidsnyder-nc.github.io');
 
-                setTimeout(() => {
-                    mainContent.classList.remove('anim-in-fade', 'anim-in-slide');
-                    isAnimating = false;
-                }, 500);
+                    // Clear loading skeletons
+                    reposContainer.innerHTML = '';
+                    
+                    if (repos.length === 0) {
+                       reposContainer.innerHTML = '<p class="text-center col-span-full">No public repositories found.</p>';
+                       return;
+                    }
 
-            }, isInitialLoad ? 0 : 300);
-        }
+                    // Populate repository cards
+                    repos.forEach(repo => {
+                        const repoEl = document.createElement('div');
+                        repoEl.className = 'repo-card bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 flex flex-col justify-between';
+                        
+                        const description = repo.description || 'No description provided.';
+                        const language = repo.language ? `<span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-900">${repo.language}</span>` : '';
 
-        /**
-         * Creates and injects the navigation links with a staggered animation.
-         */
-        function createNavLinks() {
-            projects.forEach((proj, index) => {
-                const a = document.createElement('a');
-                a.href = '#';
-                a.dataset.id = proj.id;
-                // Added classes for staggered animation
-                a.className = 'nav-item flex items-center justify-end gap-x-2.5 text-gray-600 hover:text-gray-900 py-2 px-4 rounded-lg transition-all duration-300 opacity-0 transform translate-x-4';
-                a.style.transitionDelay = `${100 + index * 50}ms`; // Start delay after title
-                
-                a.innerHTML = `<span>${proj.title}</span>${proj.icon || ''}`;
-                
-                if (index === 0) { a.classList.add('active'); }
-                a.onclick = (e) => { e.preventDefault(); loadContent(proj.id); };
-                navMenu.appendChild(a);
-
-                if (index === 0) {
-                    const divider = document.createElement('hr');
-                    divider.className = 'my-2 border-gray-200/80 transition-all duration-300 opacity-0 transform translate-x-4';
-                    divider.style.transitionDelay = `150ms`;
-                    navMenu.appendChild(divider);
-                }
-            });
-
-            // Trigger the staggered animation
-            setTimeout(() => {
-                 document.querySelectorAll('#nav-menu .nav-item, #nav-menu hr').forEach(el => {
-                    el.classList.remove('opacity-0', 'translate-x-4');
-                 });
-            }, 100);
-        }
-
-        /**
-         * Sets up the Intersection Observer to trigger animations on scroll.
-         */
-        function initScrollObserver() {
-            if (scrollObserver) {
-                scrollObserver.disconnect();
-            }
-            scrollObserver = new IntersectionObserver(
-                (entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                            observer.unobserve(entry.target);
-                        }
+                        repoEl.innerHTML = `
+                            <div>
+                                <h3 class="text-xl font-bold mb-2 text-gray-900 dark:text-white">${repo.name}</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4">${description}</p>
+                                <div class="mb-4">
+                                    ${language}
+                                </div>
+                            </div>
+                            <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-colors duration-200 text-center">
+                                View on GitHub
+                            </a>
+                        `;
+                        reposContainer.appendChild(repoEl);
                     });
-                },
-                { rootMargin: '0px 0px -10% 0px' }
-            );
 
-            document.querySelectorAll('.anim-on-scroll').forEach(el => {
-                scrollObserver.observe(el);
-            });
-        }
-        
-        /**
-         * Sets up the interactive parallax effect for background snippets.
-         */
-        function initInteractiveBackground() {
-            const bgContainer = document.getElementById('background-snippets');
-            window.addEventListener('mousemove', (e) => {
-                if(window.innerWidth < 1024) return; // Disable on mobile
-                const x = (e.clientX - window.innerWidth / 2) / window.innerWidth;
-                const y = (e.clientY - window.innerHeight / 2) / window.innerHeight;
-
-                snippetElements.forEach((el, i) => {
-                    const factor = (i % 3 + 1) * -5; // Different movement factor for each snippet
-                    // The animation still runs via CSS, we just add a mouse-based transform on top
-                    el.style.setProperty('--parallax-x', `${x * factor}px`);
-                    el.style.setProperty('--parallax-y', `${y * factor}px`);
-                });
-            });
-
-            // Update CSS to use the parallax variables
-            snippetElements.forEach(el => {
-                el.style.transform = 'translate(var(--parallax-x, 0), var(--parallax-y, 0))';
-            });
-        }
-
-        function initMobileMenu() {
-            menuToggle.addEventListener('click', () => {
-                sideNav.classList.toggle('hidden');
-                openIcon.classList.toggle('hidden');
-                closeIcon.classList.toggle('hidden');
-            });
-        }
-        
-        function preloadImages() {
-            projects.forEach(project => { if (project.logo) { const img = new Image(); img.src = project.logo; } });
-        }
-
-        function initBackgroundSnippets() {
-            const container = document.getElementById('background-snippets');
-            if (!container) return;
-            const numSnippets = 8;
-            const gridCols = 4;
-            const gridRows = 2;
-            const cellWidth = 100 / gridCols;
-            const cellHeight = 100 / gridRows;
-
-            let gridPositions = Array.from({ length: gridCols * gridRows }, (_, i) => i);
-            for (let i = gridPositions.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [gridPositions[i], gridPositions[j]] = [gridPositions[j], gridPositions[i]];
+                } catch (error) {
+                    console.error("Failed to fetch GitHub data:", error);
+                    errorMessage.textContent = `Error: ${error.message}. Please try again later.`;
+                    errorMessage.classList.remove('hidden');
+                    reposContainer.innerHTML = ''; // Clear skeletons on error
+                }
             }
 
-            for (let i = 0; i < numSnippets; i++) {
-                const el = document.createElement('div');
-                el.className = 'floating-snippet';
-                el.textContent = snippets[i % snippets.length];
-                const posIndex = gridPositions[i];
-                const col = posIndex % gridCols;
-                const row = Math.floor(posIndex / gridCols);
-                el.style.left = `${col * cellWidth + (Math.random() * 5 - 2.5)}%`;
-                el.style.top = `${row * cellHeight + (Math.random() * 5 - 2.5)}%`;
-                el.style.animationDuration = `${Math.random() * 20 + 25}s`;
-                el.style.animationDelay = `${Math.random() * -30}s`; // Start at random points
-                container.appendChild(el);
-                snippetElements.push(el);
-            }
-            initInteractiveBackground();
-        }
-
-        // --- Initializer ---
-        window.addEventListener('load', () => {
-            createNavLinks();
-            loadContent('home');
-            initMobileMenu();
-            initBackgroundSnippets();
-            preloadImages();
-            initScrollObserver(); // Initial observer setup
+            fetchGitHubData();
         });
-
     </script>
+
 </body>
 </html>
